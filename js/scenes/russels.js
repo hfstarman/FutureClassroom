@@ -1,6 +1,7 @@
 import * as cg from "../render/core/cg.js";
 import { controllerMatrix, buttonState } from "../render/core/controllerInput.js";
-import { squaredDistance } from "../third-party/gl-matrix/src/gl-matrix/vec3.js";
+import { solveBallisticArc } from "../util/math.js";
+import { lcb, rcb } from "../handle_scenes.js";
 
    class ControllerEvents {
       constructor() {
@@ -11,82 +12,58 @@ import { squaredDistance } from "../third-party/gl-matrix/src/gl-matrix/vec3.js"
       }
    }
 
-   const xor = (a, b) => (a || b) && !(a && b);
-   const vsub = (a, b) => [a[0]-b[0], a[1]-b[1], a[2]-b[2]];
-   const vadd = (a, b) => [a[0]+b[0], a[1]+b[1], a[2]+b[2]];
-   const getPos = (matrix) => matrix.slice(-4, -1);
-   const sqCenterDist = (m1, m2) => {
-      const m1Pos = getPos(m1);
-      const m2Pos = getPos(m2);
-      // squared distance formula
-      return vsub(m1Pos, m2Pos).reduce((acc, v) => acc + v*v, 0);
-   }
+   const getHeight = (matrix) => matrix[13];
 
-   let cx, cy, tx, ty, tz, theta;
-   let isSelectedLeft, isSelectedRight, isTriggerPressed, isButtonPressed;
-   let leftEvents, rightEvents;
-   let prevTriggerL, prevTriggerR;
-   let temp = true;
+   const isEmptyOrNull = (arr) => arr === null || arr === undefined || arr === [];
+
+   let isSelectedLeft, isSelectedRight;
+   let previousMatrix;
    let grabbed = false;
    let moveDir = [0,0,0];
    const grabDistance = .3;
-   const speedMultiplier = 4;
-   const resetMoveDir = () => moveDir = [0,0,0];
-   
+   let dv = cg.mIdentity();
+   let gravity = 0.002;
+   let mGravity = cg.mIdentity();
+   mGravity[13] = -gravity;
+   let restutition = .1;
+   let friction = .2;
+
+   let buttonDown = false;
 
    export const init = async model => {
-      isSelectedLeft = isSelectedRight = isTriggerPressed = isButtonPressed = false;
-      leftEvents = new ControllerEvents();
-      rightEvents = new ControllerEvents();
-      cx = 0, cy = 1.5, tx = 0, ty = 1.5, tz = 0, theta = 0;
-
-      model.control('a', 'left' , () => tx -= .1);
-      model.control('s', 'down' , () => ty -= .1);
-      model.control('d', 'right', () => tx += .1);
-      model.control('w', 'up'   , () => ty += .1);
-
-      model.control('l', 'controller left'  , () => cx -= .1);
-      model.control('r', 'controller right' , () => cx += .1);
-
-      model.control('f', 'rotate left'  , () => theta -= .1);
-      model.control('g', 'rotate right' , () => theta += .1);
+      isSelectedLeft = isSelectedRight = false;
 
       // CREATE THE TARGET
 
       let target = model.add();
       target.add('cube').texture('media/textures/brick.png');
-      target.move(0, 1.5, 0);
+      target.move(0, 1.5, 0).scale(.1, .1, .1).turnZ(Math.PI/2);
+      previousMatrix = target.getMatrix();
 
+      console.log("init russels")
       // CREATE THE LASER BEAMS FOR THE LEFT AND RIGHT CONTROLLERS
 
-      let beamL = model.add();
-      beamL.add('cube').color(0,0,1).move(.02,0,0).scale(.02,.005,.005);
-      beamL.add('cube').color(0,1,0).move(0,.02,0).scale(.005,.02,.005);
-      beamL.add('cube').color(1,0,0).move(0,0,.02).scale(.005,.005,.02);
-      beamL.add('tubeZ').color(1,0,0).move(0,0,-10).scale(.001,.001,10); // RED
+      // let beamL = model.add();
+      // beamL.add('cube').color(0,0,1).move(.02,0,0).scale(.02,.005,.005);
+      // beamL.add('cube').color(0,1,0).move(0,.02,0).scale(.005,.02,.005);
+      // beamL.add('cube').color(1,0,0).move(0,0,.02).scale(.005,.005,.02);
+      // beamL.add('tubeZ').color(1,0,0).move(0,0,-10).scale(.001,.001,10); // RED
 
-      let beamR = model.add();
-      beamR.add('cube').color(0,0,1).move(.02,0,0).scale(.02,.005,.005);
-      beamR.add('cube').color(0,1,0).move(0,.02,0).scale(.005,.02,.005);
-      beamR.add('cube').color(1,0,0).move(0,0,.02).scale(.005,.005,.02);
-      beamR.add('tubeZ').color(0,1,0).move(0,0,-10).scale(.001,.001,10); // GREEN
+      // let beamR = model.add();
+      // beamR.add('cube').color(0,0,1).move(.02,0,0).scale(.02,.005,.005);
+      // beamR.add('cube').color(0,1,0).move(0,.02,0).scale(.005,.02,.005);
+      // beamR.add('cube').color(1,0,0).move(0,0,.02).scale(.005,.005,.02);
+      // beamR.add('tubeZ').color(0,1,0).move(0,0,-10).scale(.001,.001,10); // GREEN
 
-      let grabSphere = model.add()
-      grabSphere.add('sphere').color(1,1,1).move(1,1.5,0).scale(.3, .3, .3);
-   }
+      let grabbedObject = null;
 
-   export const display = model => {
       model.animate(() => {
+         console.log("animate russels")
          // use model.deltaTime for time-based animation
          // GET THE CURRENT MATRIX AND TRIGGER INFO FOR BOTH CONTROLLERS
 
          let matrixL  = controllerMatrix.left;
-         // console.log(matrixL);
          let triggerL = buttonState.left[0].pressed;
-         // if (!leftEvents.triggerDown && triggerL) {
-         //    // console.log("TRIGGER PRESSED");
-         //    console.log(buttonState.left[0]);
-         // } 
 
          let matrixR  = controllerMatrix.right;
          let triggerR = buttonState.right[0].pressed;
@@ -97,51 +74,64 @@ import { squaredDistance } from "../third-party/gl-matrix/src/gl-matrix/vec3.js"
          let btnA = buttonState.right[4].pressed;
          let btnB = buttonState.right[5].pressed;
 
-         // set controller events here
-         // left trigger
-         // false ^ false = false
-         // true  ^ false = false
-         // false ^ true  = true
-         // true  ^ true  = false
+         // place beams on controllers
+         // if not in VR mode then place beams in default positions
+         let LM = matrixL.length ? cg.mMultiply(matrixL, cg.mTranslate( .006,0,0)) : cg.mTranslate(-.2,1.5,1);
+         let RM = matrixR.length ? cg.mMultiply(matrixR, cg.mTranslate(-.001,0,0)) : cg.mTranslate(1,1.5,1);
+         // model.child(1).setMatrix(LM);
+         // model.child(2).setMatrix(RM);
 
-         let LM = matrixL.length ? cg.mMultiply(matrixL, cg.mTranslate( .006,0,0)) : cg.mTranslate(cx-.2,cy,1);
-         let RM = matrixR.length ? cg.mMultiply(matrixR, cg.mTranslate(-.001,0,0)) : cg.mTranslate(cx+1,cy,1);
          // ANIMATE THE TARGET
-         
-
          let target = model.child(0);
+
+         let prevPrevMatrix = previousMatrix;
+
          if (grabbed) {
-            target.setMatrix(RM).scale(.1, .1, .1);
-            const cpos = RM.slice(-4, -1);
-            tx = cpos[0];
-            ty = cpos[1];
-            tz = cpos[2];
+            // move it to the front of the controller
+            // then turn it 45 degrees
+            target.setMatrix(RM).move(0, -.14, -.15).turnX(Math.PI/4).scale(.1, .1, .1);
          } else {
-            target.identity().move(tx, ty, tz).scale(.1, .1, .1);
-            // .move(tx, ty, tz)
-            // .move(cpos[0], cpos[1], cpos[2]-.2)
-            // .turnY(1)// + Math.sin(model.time))
+            target.setMatrix(previousMatrix);
+
+            if (getHeight(target.getMatrix()) + (.3/2) + dv[13] <= 1) {
+               // add bounce
+               dv[13] = -dv[13] * restutition; // Y
+               
+               dv[12] = dv[12] * (1-friction); // X
+               dv[14] = dv[14] * (1-friction); // Z
+            } else {
+               // add gravity
+               dv = cg.mm(dv, mGravity);
+            }
+
+            target.setMatrix(cg.mm(target.getMatrix(), dv));
+
+         }  
+         // remember the position after moving it
+         previousMatrix = target.getMatrix();
+
+         // now get the difference between the two coordinates
+         // use that for the dx dy dz
+         if (grabbed) {
+            // (this code is used for throwing)
+            // when you get go then the object maintains the same velocity the controller had
+            dv[12] = previousMatrix[12] - prevPrevMatrix[12];
+            dv[13] = previousMatrix[13] - prevPrevMatrix[13];
+            dv[14] = previousMatrix[14] - prevPrevMatrix[14];
          }
 
-         if (model.time % 10 == 0) {
-            console.log(target.getMatrix());
-         }
 
-         // PLACE THE LASER BEAMS TO EMANATE FROM THE CONTROLLERS
-         // IF NOT IN VR MODE, PLACE THE BEAMS IN DEFAULT POSITIONS
-
-
-         model.child(1).setMatrix(LM);
-         model.child(2).setMatrix(RM);
+         // if (model.time % 10 == 0) {
+         //    console.log(target.getMatrix());
+         // }
 
 	 // CHECK TO SEE WHETHER EACH BEAM INTERSECTS WITH THE TARGET
 
-         let hitL = cg.mHitRect(LM, target.getMatrix());
-         let hitR = cg.mHitRect(RM, target.getMatrix());
+         // let hitL = cg.mHitRect(LM, target.getMatrix());
+         // let hitR = cg.mHitRect(RM, target.getMatrix());
+         let hitL = lcb.hitRect(target.getMatrix());
+         let hitR = rcb.hitRect(target.getMatrix());
 
-	 // CHANGE TARGET COLOR DEPENDING ON WHICH BEAM(S) HIT IT AND WHAT TRIGGERS ARE PRESSED
-    // When the beam intersects the block and I press the trigger down then the block is selected
-   // block is deselected when I release the trigger
          // set selected
          // only one controller can select the target at a time
          if  (hitL && triggerL && !isSelectedRight) isSelectedLeft = true;
@@ -152,50 +142,57 @@ import { squaredDistance } from "../third-party/gl-matrix/src/gl-matrix/vec3.js"
          if (!triggerR) isSelectedRight = false;
 
          if (isSelectedLeft) target.color(1,0,0);
-         else if (isSelectedRight) target.color(0,1,0);
+         else if (isSelectedRight) target.color(1,0,0);
          else target.color(1,1,1);
 
-         // sx 0 0 tx
-         // 0 sy 0 ty
-         // 0 0 sz tz
-         // x y z 1
-
-         if (isSelectedRight && triggerR) {
-            // A->B = B-A
-            // target to controller = controller - target
-            const targetPos = getPos(target.getMatrix());
-            const controllerPos = getPos(RM);
-            moveDir = cg.normalize(vsub(controllerPos, targetPos));
+         if (btnA && !buttonDown) {
+            buttonDown = true;
+            // pick some angle
+            let angle = Math.PI * (1/3); // 60 degrees
+            // and some speed
+            // then convert to xyz vector
+            // set dv
+            
+            const targetPos = cg.getPos(target.getMatrix());
+            const controllerPos = cg.getPos(RM);
+            // let vector = cg.normalize(cg.vsub(controllerPos, targetPos));
+            // vector = cg.scale(vector, .1);
+            let sol = null;
+            let speed = .1;
+            while (isEmptyOrNull(sol) && speed < .3) {
+               sol = solveBallisticArc(targetPos, speed, controllerPos, gravity);
+               speed += .02;
+            }
+            console.log("solution:")
+            console.log(sol)
+            if (sol.length > 0) dv = cg.mm(dv, cg.mTranslate(sol[1]));
+            // dv = cg.mm(dv, cg.mTranslate(vector));
          }
-         if (btnA) {
-            // target - controller to make it move backwards
-            moveDir = cg.normalize(vsub(getPos(target.getMatrix()), getPos(RM)));
+
+         if (!btnA && buttonDown) {
+            buttonDown = false;
          }
 
-         const distance = cg.scale(moveDir, speedMultiplier * model.deltaTime);
-            tx += distance[0];
-            ty += distance[1];
-            tz += distance[2];
-
-         if (trigger2R && sqCenterDist(RM, target.getMatrix()) < grabDistance * grabDistance) {
-            resetMoveDir();
+         if (trigger2R && cg.sqCenterDist(RM, target.getMatrix()) < grabDistance * grabDistance) {
             grabbed = true;
          }
+
          if (!trigger2R) {
             grabbed = false;
          }
 
-         if (btnB) resetMoveDir();
-
-         // if trigger2 and target is in box in front of the controller then stop the target
-
-
-         // need to be able to grab the object
-         
-
-
-         // target.color(hitL && hitR ? triggerL || triggerR ? [0,0,1] : [.5,.5,1] :
-         //                      hitL ? triggerL             ? [1,0,0] : [1,.5,.5] :
-         //                      hitR ? triggerR             ? [0,1,0] : [.5,1,.5] : [1,1,1]);
+         if (btnB) grabbed = true;
       });
    }
+
+/*
+   Object Model
+   ------------
+   gravity modifier
+   restitution
+   bounding box
+   loc_state = {held, stored, free}
+   storedSlot
+   x,y,z init scaling
+   current speed (current location - previous location)
+*/
