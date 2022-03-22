@@ -68,6 +68,7 @@ export let getViews = (views) => {
   for (let view of views) viewMatrix.push(view.viewMatrix);
 };
 
+// model -> object its being attached to, hand -> "left" or "right"
 export function ControllerBeam(model, hand) {
    this.hand = hand;
    let bend = Math.PI/4;

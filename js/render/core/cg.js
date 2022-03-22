@@ -8,8 +8,25 @@
       ( a.length < 4 ? 0 : a[3] * b[3] ));
    export let mix = (a,b,t,u) => [ mixf(a[0],b[0],t,u), mixf(a[1],b[1],t,u), mixf(a[2],b[2],t,u) ];
    export let norm = v => Math.sqrt(dot(v,v));
-   export let normalize = (v,s) => scale(v, 1 / norm(v));
+   export let normalize = (v) => scale(v, 1 / norm(v));
    export let scale = (v, s) => { let w = []; for (let i=0 ; i<v.length ; i++) w.push(s*v[i]); return w; }
+
+   export const vsub = (a, b) => [a[0]-b[0], a[1]-b[1], a[2]-b[2]];
+   export const vadd = (a, b) => [a[0]+b[0], a[1]+b[1], a[2]+b[2]];
+   export const getPos = (matrix) => matrix.slice(-4, -1);
+   export const sqCenterDist = (m1, m2) => {
+      const m1Pos = getPos(m1);
+      const m2Pos = getPos(m2);
+      // squared distance formula
+      return vsub(m1Pos, m2Pos).reduce((acc, v) => acc + v*v, 0);
+   }
+   export const vSqDistance = (v1, v2) => {
+      return vsub(v1, v2).reduce((acc, v) => acc + v*v, 0);
+   }
+   export const vDistance = (v1, v2) => Math.sqrt(vSqDistance(v1, v2));
+
+   export const magnitude = (v) => norm(v);
+   export const vZero = () => [0,0,0];
 
 // NOISE METHOD
 
@@ -37,6 +54,19 @@
 }).noise;
 
 // MATRIX METHODS
+
+export const printMatrix = (matrix) => {
+   let str = "";
+   for (let i = 0; i < 4; i++) {
+      for (let j = 0; j < 4; j++) {
+         str += matrix[i*4+j].toFixed(2) + " ";
+      }
+      str += "\n";
+   }
+   console.log(str);
+}
+
+export const getHeight = (matrix) => matrix[13];
 
 export let mAimX = X => {
    X = normalize(X);
@@ -105,6 +135,18 @@ export let mMultiply = (a,b) => {
       let value = 0;
       for (let i = 0 ; i < 4 ; i++)
          value += a[4*i + row] * b[4*col + i];
+      m.push(value);
+   }
+   return m;
+}
+
+export let mm = (a,b) => {
+   let m = [];
+   for (let row = 0 ; row < 4 ; row++)
+   for (let col = 0 ; col < 4 ; col++) {
+      let value = 0;
+      for (let i = 0 ; i < 4 ; i++)
+         value += a[4*row + i] * b[4*i + col];
       m.push(value);
    }
    return m;
