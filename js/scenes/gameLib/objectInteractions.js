@@ -1,13 +1,33 @@
 // @ts-check
 import * as cg from "../../render/core/cg.js";
 import { getCtrlrMatrix } from "./controllers.js";
-import { objectCollection } from "./objects.js";
+import { physicsObjects } from "./objects.js";
 import { state } from "./objects.js";
 import { GameObject } from "./objects.js";
+import { lcb, rcb } from "../../handle_scenes.js";
+import { solveBallisticArc } from "../../util/math.js";
+import c from "./colors.js";
+
+const grabDistance = 0.3;
+
+const grabbedObjects = {
+  left: null,
+  right: null
+}
+
+const hoveredObjects = {
+  left: null,
+  right: null
+}
+
+const selectedObjects = {
+  left: null,
+  right: null
+}
 
 export const mHitObject = (matrix) => {
   let hit = null;
-  for (let object of objectCollection) {
+  for (let object of Object.values(physicsObjects)) {
     if (cg.mHitRect(object.getMatrix(), matrix)) {
       hit = object;
       break;
@@ -17,8 +37,31 @@ export const mHitObject = (matrix) => {
   return hit;
 }
 
+/**
+ * Returns the GameObject that the given controller is targeting. If no object is targeted, returns null.
+ * @param {string} hand 'left' or 'right'
+ * @returns {GameObject} the closest object targted by the controller
+ */
+export const getTargetedObject = (hand) => {
+  const beam = hand === "left" ? lcb : rcb;
+  const ctrlrPos = cg.getPos(getCtrlrMatrix(hand));
+  let hit = null;
+  let closestDist = Infinity;
+  for (let obj of Object.values(physicsObjects)) {
+    if (obj.state === state.free && beam.hitRect(obj.getMatrix())) {
+      const dist = cg.vSqDistance(ctrlrPos, obj.getPos());
+      if (dist < closestDist) {
+        hit = obj;
+        closestDist = dist;
+      }
+    }
+  }
+
+  return hit;
+}
+
 export const handleObjectMovement = () => {
-  for (let obj of objectCollection) {
+  for (let obj of Object.values(physicsObjects)) {
     switch (obj.state) {
       case state.held:
         handleHeldObject(obj);
@@ -60,12 +103,6 @@ const applyPhysicsToObject = (obj) => {
   obj.applyVelocity();
 }
 
-const grabDistance = 0.3;
-const grabbedObjects = {
-  left: null,
-  right: null
-}
-
 /**
  * Sets fields and variables related to grabbing an object
  * @param {GameObject} obj The object being grabbed
@@ -86,7 +123,7 @@ export const tryGrab = (hand) => {
   const CM = getCtrlrMatrix(hand);
   let closestObj = null;
   let closestDist = null;
-  for (let obj of objectCollection) {
+  for (let obj of Object.values(physicsObjects)) {
     let sqDistance = cg.vSqDistance(obj.getPos(), cg.getPos(CM));
     if (sqDistance < grabDistance * grabDistance) {
       if (closestObj === null || sqDistance < closestDist) {
@@ -106,5 +143,90 @@ export const releaseGrab = (hand) => {
   if (grabbedObj !== null) {
     grabbedObj.state = state.free;
     grabbedObjects[hand] = null;
+  }
+}
+
+/**
+ * Attempts to perform an alyx grab. Is only able to perform
+ * it if there is an object selected by given hand.
+ * @param {string} hand 'left' or 'right'
+ */
+export const tryAlyxGrab = (hand) => {
+    const obj = selectedObjects[hand];
+    if (obj === null) return;
+    removeSelected(hand);
+    
+    const targetPos = cg.getPos(obj.getMatrix());
+    const controllerPos = cg.getPos(getCtrlrMatrix(hand));
+
+    let sol = [];
+    let speed = .1;
+    while (sol.length == 0 && speed < .3) {
+       sol = solveBallisticArc(targetPos, speed, controllerPos, obj.gravity);
+       speed += .02;
+    }
+    console.log("solution:")
+    console.log(sol)
+    if (sol.length > 0) obj.setVelocity(sol[1]);
+}
+
+// Can optimize by only resetting colors of objects that were changed
+export const resetAllObjectColors = () => {
+  for (let obj of Object.values(physicsObjects))
+    obj.entity.color(obj.defaultColor);
+}
+
+export const setObjectColors = () => {
+  for (let obj of Object.values(physicsObjects)) {
+    if (obj.selectedBy !== null)
+      obj.entity.color(c.redish);
+    else if (obj.hoveredBy !== null)
+      obj.entity.color(c.orange);
+    else
+      obj.entity.color(obj.defaultColor);
+  }
+}
+
+/**
+ * Sets appropriate variables when an object is hovered over
+ * @param {GameObject} obj The game object to mark
+ * @param {string} hand 'left' or 'right'
+ */
+export const markHovered = (obj, hand) => {
+  removeHovered(hand);
+  obj.hoveredBy = hand;
+  hoveredObjects[hand] = obj;
+}
+
+/**
+ * Resets the variables related to hovering over an object
+ * @param {string} hand 'left' or 'right'
+ */
+export const removeHovered = (hand) => {
+  if (hoveredObjects[hand] !== null) {
+    hoveredObjects[hand].hoveredBy = null;
+    hoveredObjects[hand] = null;
+  }
+}
+
+/**
+ * Sets appropriate variables when an object is selected
+ * @param {GameObject} obj The object being selected
+ * @param {string} hand 'left' or 'right'
+ */
+export const markSelected = (obj, hand) => {
+  removeSelected(hand);
+  obj.selectedBy = hand;
+  selectedObjects[hand] = obj;
+}
+
+/**
+ * Resets the variables related to selecting an object
+ * @param {string} hand 'left' or 'right'
+ */
+export const removeSelected = (hand) => {
+  if (selectedObjects[hand] !== null) {
+    selectedObjects[hand].selectedBy = null;
+    selectedObjects[hand] = null;
   }
 }

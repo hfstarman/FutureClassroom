@@ -62,6 +62,8 @@ export const buttonWentDown = (button) => {
   const prevPressed = info.pressed;
   const currPressed = buttonState[info.hand][info.button].pressed;
   let result = !prevPressed && currPressed;
+  if (button == "triggerR")
+    console.log(`BUTTON STATE: ${currPressed}, PREV: ${prevPressed}, result: ${result}`);
 
   if (result) info.pressed = currPressed;
 

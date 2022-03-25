@@ -1,6 +1,6 @@
 // @ts-check
 import * as cg from "../../render/core/cg.js";
-
+import c from "./colors.js";
 /*
    Object Model
    ------------
@@ -14,7 +14,10 @@ import * as cg from "../../render/core/cg.js";
 */
 
 let objectID = 0;
-export const objectCollection = [];
+export const physicsObjects = {};
+export const removePhysicsObject = (gameObject) => {
+  delete physicsObjects[gameObject.id];
+}
 
 export const state = {
     held: "held",
@@ -33,15 +36,17 @@ export class GameObject {
     this.state = state.free;
     this.storedSlot = null;
     this.handHeldIn = null; // left or right
+    this.selectedBy = null; // left or right
+    this.hoveredBy = null; // left or right
 
     this.restitution = 0.1;
     this.friction = 0.2;
-    this.gravity = 0.002;
+    this.gravity = 0.05;
 
     this.velocity = cg.vZero();
 
     this.id = objectID++;
-    objectCollection.push(this);
+    physicsObjects[this.id] = this;
   }
 
   getMatrix() {
@@ -85,7 +90,7 @@ export class GameObject {
         this.velocity[2] = this.velocity[2] * (1-this.friction); // Z
         break;
       case "gravity":
-        this.velocity[1] += -this.gravity /* * this.model.deltaTime*/;
+        this.velocity[1] += -(this.gravity * this.model.deltaTime);
         break;
       default:
         break;
@@ -96,9 +101,10 @@ export class GameObject {
 export class Cube extends GameObject {
   constructor(model, initPosition) {
     super(model, initPosition);
+    this.defaultColor = c.white;
 
     this.entity.add("cube");
-    this.entity.texture("media/textures/cube-sea.png");
+    this.entity.texture("media/textures/brick.png");
     this.entity.move(this.initPosition).scale(0.1, 0.1, 0.1);
   }
 }
