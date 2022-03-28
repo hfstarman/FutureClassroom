@@ -2,10 +2,48 @@
 import * as cg from "../../render/core/cg.js";
 import { controllerMatrix, buttonState } from "../../render/core/controllerInput.js";
 import * as t from "./types.js";
-import { tryGrab, releaseGrab } from "./objectInteractions.js";
+import { 
+  tryGrab, 
+  releaseGrab, 
+  getTargetedObject, 
+  markHovered,
+  removeHovered,
+  markSelected,
+  removeSelected,
+  tryAlyxGrab
+} from "./objectInteractions.js";
 
-export const controllerInputActions = () => {
-  
+export const handleControllerActions = () => {
+  let hitL = getTargetedObject("left");
+  let hitR = getTargetedObject("right");
+
+
+  if (hitR !== null) {
+      markHovered(hitR, "right");
+      if (buttonWentDown("triggerR"))
+        markSelected(hitR, "right");
+  } else {
+      removeHovered("right");
+  }
+
+  if (hitL !== null) {
+      markHovered(hitL, "left");
+      if (buttonWentDown("triggerL"))
+        markSelected(hitL, "left");
+  } else {
+      removeHovered("left");
+  }
+
+  if (buttonWentDown("A")) tryAlyxGrab("right");
+  if (buttonWentDown("X")) tryAlyxGrab("left");
+
+  // grabbing objects
+  if (buttonWentDown("trigger2R")) tryGrab("right");
+  if (buttonWentUp("trigger2R")) releaseGrab("right");
+
+  // releasing selected objects
+  if (buttonWentUp("triggerR")) removeSelected("right");
+  if (buttonWentUp("triggerL")) removeSelected("left");
 }
 
 // left[0] = triggerL

@@ -32,6 +32,7 @@ export class GameObject {
     this.initPosition = initPosition;
     this.model = model;
     this.entity = model.add();
+    this.entity.move(initPosition);
 
     this.state = state.free;
     this.storedSlot = null;
@@ -98,6 +99,14 @@ export class GameObject {
   }
 }
 
+/*
+this.entity.add("tubeY")
+  .color(this.defaultColor)
+  .turnX(radians)
+  .move(0, 0.5, 0)
+  .scale(0.1, 0.1, 0.1);
+*/
+
 export class Cube extends GameObject {
   constructor(model, initPosition) {
     super(model, initPosition);
@@ -105,6 +114,28 @@ export class Cube extends GameObject {
 
     this.entity.add("cube");
     this.entity.texture("media/textures/brick.png");
-    this.entity.move(this.initPosition).scale(0.1, 0.1, 0.1);
+    this.entity.scale(0.1, 0.1, 0.1);
+  }
+}
+
+export class Knife extends GameObject {
+  constructor(model, initPosition) {
+    super(model, initPosition);
+    this.defaultColor = c.black;
+    // this.currentColor = c.black;
+    this.gravity = 0;
+
+    this.entity.add("tubeY")
+      .color(c.black)
+      .move(0, -0.03, 0)
+      .scale(0.02, 0.04, 0.02);
+    this.entity.add("cube")
+      .color(c.black)
+      .move(0, .02, 0)
+      .scale(0.06, 0.008, 0.02);
+    this.entity.add("cube")
+      .color(c.black)
+      .move(0, 0.11, 0)
+      .scale(0.03, 0.10, 0.008);
   }
 }
