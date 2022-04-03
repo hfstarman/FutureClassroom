@@ -1,4 +1,5 @@
 // @ts-check
+import { BaseClass } from "./baseClass.js";
 import * as cg from "../../render/core/cg.js";
 import c from "./colors.js";
 /*
@@ -16,7 +17,7 @@ import c from "./colors.js";
 let objectID = 0;
 export const physicsObjects = {};
 export const removePhysicsObject = (gameObject) => {
-  delete physicsObjects[gameObject.id];
+  delete physicsObjects["" + gameObject.id];
 }
 
 export const state = {
@@ -26,13 +27,9 @@ export const state = {
 };
 
 // object base class
-export class GameObject {
+export class GameObject extends BaseClass {
   constructor(model,  initPosition) {
-    if (initPosition === undefined) initPosition = [0, 1.5, 0];
-    this.initPosition = initPosition;
-    this.model = model;
-    this.entity = model.add();
-    this.entity.move(initPosition);
+    super(model, initPosition);
 
     this.state = state.free;
     this.storedSlot = null;
@@ -46,24 +43,17 @@ export class GameObject {
 
     this.velocity = cg.vZero();
 
+    this.defaultColor = c.white;
+    this.hoverColor = c.orange;
+    this.selectColor = c.redish;
+
+    this.entityType = "GameObject";
     this.id = objectID++;
     physicsObjects[this.id] = this;
   }
 
-  getMatrix() {
-    return this.entity.getMatrix();
-  }
-
-  setMatrix(m) {
-    return this.entity.setMatrix(m);
-  }
-
-  getPos() {
-    return cg.getPos(this.getMatrix());
-  }
-
-  applyTransform(m) {
-    this.setMatrix(cg.mm(this.getMatrix(), m));
+  getName() {
+    return this.entityType + "_" + this.id;
   }
 
   applyVelocity() {
@@ -97,44 +87,33 @@ export class GameObject {
         break;
     }
   }
-}
 
-/*
-this.entity.add("tubeY")
-  .color(this.defaultColor)
-  .turnX(radians)
-  .move(0, 0.5, 0)
-  .scale(0.1, 0.1, 0.1);
-*/
+}
 
 export class Cube extends GameObject {
   constructor(model, initPosition) {
     super(model, initPosition);
-    this.defaultColor = c.white;
+    this.entityType = "Cube";
 
-    this.entity.add("cube");
-    this.entity.texture("media/textures/brick.png");
-    this.entity.scale(0.1, 0.1, 0.1);
+    this.entity.add("cube")
+      .texture("media/textures/brick.png")
+      .scale(0.1, 0.1, 0.1);
   }
 }
 
 export class Knife extends GameObject {
   constructor(model, initPosition) {
     super(model, initPosition);
+    this.entityType = "Knife";
     this.defaultColor = c.black;
-    // this.currentColor = c.black;
-    this.gravity = 0;
 
-    this.entity.add("tubeY")
-      .color(c.black)
+    this.handle = this.entity.add("tubeY")
       .move(0, -0.03, 0)
       .scale(0.02, 0.04, 0.02);
-    this.entity.add("cube")
-      .color(c.black)
+    this.crossguard = this.entity.add("cube")
       .move(0, .02, 0)
       .scale(0.06, 0.008, 0.02);
-    this.entity.add("cube")
-      .color(c.black)
+    this.blade = this.entity.add("cube")
       .move(0, 0.11, 0)
       .scale(0.03, 0.10, 0.008);
   }
