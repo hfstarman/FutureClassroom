@@ -113,6 +113,54 @@ export let mHitRect = (A, B) => {
    return [F(1)/2, F(3)/2];
 }
 
+export let mHitPrism = (mBeam, mCube) => {
+   // M * R * T * S
+   const pi = Math.PI;
+   const rotations = [
+      mIdentity(),      // front
+      mRotateX(pi/2),   // top
+      mRotateX(-pi/2),  //bottom
+      mRotateX(pi),     // back
+      mRotateY(pi/2),   // right
+      mRotateY(-pi/2)   // left
+   ]
+   const zSize = mCube[15];
+
+   const rectangles = rotations.map(rot => mMultiply(mMultiply(mCube, rot), mTranslate(0,0,zSize)));
+   // returns true if the beam intersects with any of the rectangles, false otherwise
+   return rectangles.reduce((hit, rect) => hit || (mHitRect(mBeam, rect) != null), false);
+
+}
+
+export let mhitRectPrism2 = (mBeam, mCube) => {
+   // check if the beam hits the front face of the cube by doing 
+   
+   // get matrix and multiply by translate forward by z size
+   // then repeat for all other faces
+
+   // M * T
+   const xSize = mCube[0];
+   const ySize = mCube[5];
+   const zSize = mCube[10];
+
+   const rectangles = [
+      mMultiply(mCube, mTranslate(0, 0, zSize)),
+      mMultiply(mCube, mTranslate(0, 0, -zSize)),
+      mMultiply(mCube, mTranslate(0, ySize, 0)),
+      mMultiply(mCube, mTranslate(0, -ySize, 0)),
+      mMultiply(mCube, mTranslate(xSize, 0, 0)),
+      mMultiply(mCube, mTranslate(-xSize, 0, 0)),
+   ]
+
+   for (var rectangle of rectangles) {
+      const hit = mHitRect(mBeam, rectangle);
+      if (hit != null) {
+         return true;
+      }
+   }
+   return false;
+}
+
 export let mIdentity = () => [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1];
 
 export let mInverse = src => {

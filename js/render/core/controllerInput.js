@@ -86,6 +86,7 @@ export function ControllerBeam(model, hand) {
       if (hand == 'right') update(matrix ? [-.005,.01,-.03] : [-.0015,.014,0], [ .2,0,0]);
    }
    this.hitRect = m => cg.mHitRect(cg.mMultiply(this.m, cg.mRotateX(-bend)), m);
+   this.hitPrism = m => cg.mHitPrism(cg.mMultiply(this.m, cg.mRotateX(-bend)), m);
    this.hitLabel = label =>
       this.hitRect(cg.mMultiply(label.getGlobalMatrix(),
                                 cg.mScale(label.getInfo().length/2,1,1)));

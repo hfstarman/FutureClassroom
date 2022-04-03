@@ -12,6 +12,7 @@ import {
   removeSelected,
   tryAlyxGrab
 } from "./objectInteractions.js";
+import { debugLog } from "./debug.js";
 
 export const handleControllerActions = () => {
   let hitL = getTargetedObject("left");
@@ -19,20 +20,23 @@ export const handleControllerActions = () => {
 
 
   if (hitR !== null) {
-      markHovered(hitR, "right");
-      if (buttonWentDown("triggerR"))
-        markSelected(hitR, "right");
+    console.log(hitR.getName());
+    markHovered(hitR, "right");
+    if (buttonWentDown("triggerR"))
+      markSelected(hitR, "right");
   } else {
-      removeHovered("right");
+    removeHovered("right");
   }
 
   if (hitL !== null) {
-      markHovered(hitL, "left");
-      if (buttonWentDown("triggerL"))
-        markSelected(hitL, "left");
+    markHovered(hitL, "left");
+    if (buttonWentDown("triggerL"))
+      markSelected(hitL, "left");
   } else {
-      removeHovered("left");
+    removeHovered("left");
   }
+
+  if (buttonWentDown("B")) debugLog();
 
   if (buttonWentDown("A")) tryAlyxGrab("right");
   if (buttonWentDown("X")) tryAlyxGrab("left");
@@ -100,8 +104,8 @@ export const buttonWentDown = (button) => {
   const prevPressed = info.pressed;
   const currPressed = buttonState[info.hand][info.button].pressed;
   let result = !prevPressed && currPressed;
-  if (button == "triggerR")
-    console.log(`BUTTON STATE: ${currPressed}, PREV: ${prevPressed}, result: ${result}`);
+  // if (button == "triggerR")
+    // console.log(`BUTTON STATE: ${currPressed}, PREV: ${prevPressed}, result: ${result}`);
 
   if (result) info.pressed = currPressed;
 

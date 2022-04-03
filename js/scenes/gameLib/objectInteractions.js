@@ -48,7 +48,7 @@ export const getTargetedObject = (hand) => {
   let hit = null;
   let closestDist = Infinity;
   for (let obj of Object.values(physicsObjects)) {
-    if (obj.state === state.free && beam.hitRect(obj.getMatrix())) {
+    if (obj.state === state.free && didIntersect(beam, obj)) {
       const dist = cg.vSqDistance(ctrlrPos, obj.getPos());
       if (dist < closestDist) {
         hit = obj;
@@ -58,6 +58,13 @@ export const getTargetedObject = (hand) => {
   }
 
   return hit;
+}
+
+const didIntersect = (beam, obj) => {
+  const rootMatrix = obj.getMatrix();
+  return obj.entity._children.reduce((res, child) => (
+    res || beam.hitPrism(cg.mm(child.getMatrix(), rootMatrix))
+  ), false);
 }
 
 export const handleObjectMovement = () => {
@@ -180,9 +187,9 @@ export const resetAllObjectColors = () => {
 export const setObjectColors = () => {
   for (let obj of Object.values(physicsObjects)) {
     if (obj.selectedBy !== null)
-      obj.entity.color(c.redish);
+      obj.entity.color(obj.selectColor);
     else if (obj.hoveredBy !== null)
-      obj.entity.color(c.orange);
+      obj.entity.color(obj.hoverColor);
     else
       obj.entity.color(obj.defaultColor);
   }
