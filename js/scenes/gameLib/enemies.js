@@ -1,4 +1,6 @@
+// @ts-check
 import { BaseClass } from "./baseClass.js";
+import c from "./colors.js";
 
 let enemyId = 0;
 export const enemies = {};
@@ -22,34 +24,41 @@ class Enemy extends BaseClass {
   }
 }
 
+const scaleProperly = (entity, scale) => {
+  entity.scale(scale, scale, scale);
+}
+
 export class Zombie extends Enemy {
   constructor(model, initPosition, spawnTime) {
     super(model, initPosition, spawnTime);
 
+    const scale = .02;
 
+    this.torso    = this.entity.add("cube")
+                        .color(c.blue)
+                        .move(0, 0, 0)
+                        .scale(8, 10, 4) // proportions, scaled down later
     this.head     = this.entity.add("cube")
                         .color(c.red)
-                        .move(0, 0.5, 0)
-                        .scale(0.1, 0.1, 0.1)
-    this.torso    = this.entity.add("cube")
-                        .color(c.red)
-                        .move(0, 0, 0)
-                        .scale(0.1, 0.1, 0.1)
+                        .move(0, 9*2, 0)
+                        .scale(8, 8, 8) 
     this.leftArm  = this.entity.add("cube")
-                        .color(c.red)
-                        .move(0, 0.5, 0)
-                        .scale(0.1, 0.1, 0.1)
+                        .color(c.green)
+                        .move(6*2, -1, 0)
+                        .scale(4, 11, 4)
     this.rightArm = this.entity.add("cube")
-                        .color(c.red)
-                        .move(0, 0.5, 0)
-                        .scale(0.1, 0.1, 0.1)
+                        .color(c.purple)
+                        .move(-6*2, -1, 0)
+                        .scale(4, 11, 4)
     this.leftLeg  = this.entity.add("cube")
-                        .color(c.red)
-                        .move(0, 0.5, 0)
-                        .scale(0.1, 0.1, 0.1)
+                        .color(c.orange)
+                        .move(4, -(5+7.5)*2, 0)
+                        .scale(4, 15, 4)
     this.rightLeg = this.entity.add("cube")
-                        .color(c.red)
-                        .move(0, 0.5, 0)
-                        .scale(0.1, 0.1, 0.1)
+                        .color(c.yellow)
+                        .move(-4, -(5+7.5)*2, 0)
+                        .scale(4, 15, 4)
+
+    scaleProperly(this.entity, scale);
   }
 }

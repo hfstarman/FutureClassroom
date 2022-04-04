@@ -1,3 +1,4 @@
+// @ts-check
 import { physicsObjects } from "./objects.js";
 import { enemies } from "./enemies.js";
 import { printMatrix } from "../../render/core/cg.js";

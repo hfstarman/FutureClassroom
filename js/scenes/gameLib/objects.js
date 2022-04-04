@@ -16,6 +16,10 @@ import c from "./colors.js";
 
 let objectID = 0;
 export const physicsObjects = {};
+/**
+ * Removes a GameObject form the global physicsObjects object.
+ * @param {GameObject} gameObject The game object you wish to remove
+ */
 export const removePhysicsObject = (gameObject) => {
   delete physicsObjects["" + gameObject.id];
 }
@@ -107,14 +111,14 @@ export class Knife extends GameObject {
     this.entityType = "Knife";
     this.defaultColor = c.black;
 
-    this.handle = this.entity.add("tubeY")
-      .move(0, -0.03, 0)
-      .scale(0.02, 0.04, 0.02);
+    this.handle     = this.entity.add("tubeY")
+                          .move(0, -0.03, 0)
+                          .scale(0.02, 0.04, 0.02);
     this.crossguard = this.entity.add("cube")
-      .move(0, .02, 0)
-      .scale(0.06, 0.008, 0.02);
-    this.blade = this.entity.add("cube")
-      .move(0, 0.11, 0)
-      .scale(0.03, 0.10, 0.008);
+                          .move(0, .02, 0)
+                          .scale(0.06, 0.008, 0.02);
+    this.blade      = this.entity.add("cube")
+                          .move(0, 0.11, 0)
+                          .scale(0.03, 0.10, 0.008);
   }
 }
