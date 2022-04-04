@@ -7,6 +7,7 @@ import { GameObject } from "./objects.js";
 import { lcb, rcb } from "../../handle_scenes.js";
 import { solveBallisticArc } from "../../util/math.js";
 import c from "./colors.js";
+import { getLowestY } from "./utils.js";
 
 const grabDistance = 0.3;
 
@@ -101,7 +102,7 @@ const handleStoredObject = (obj) => {
 
 const applyPhysicsToObject = (obj) => {
   // apply gravity, friction, and restitution
-  if (cg.getHeight(obj.getMatrix()) + (.3/2) + obj.velocity[1] <= 1) {
+  if (getLowestY(obj.entity) + obj.velocity[1] <= .7366) { // .7366 meters because I want it to be on the table (29 inches)
     obj.accelerantEvent("bounce");
     obj.accelerantEvent("friction");
   } else {
