@@ -45,8 +45,6 @@ export class GameObject extends BaseClass {
     this.friction = 0.2;
     this.gravity = 0.05;
 
-    this.velocity = cg.vZero();
-
     this.defaultColor = c.white;
     this.hoverColor = c.orange;
     this.selectColor = c.redish;
@@ -54,22 +52,6 @@ export class GameObject extends BaseClass {
     this.entityType = "GameObject";
     this.id = objectID++;
     physicsObjects[this.id] = this;
-  }
-
-  getName() {
-    return this.entityType + "_" + this.id;
-  }
-
-  applyVelocity() {
-    this.applyTransform(cg.mTranslate(this.velocity));
-  }
-
-  addVelocity(v) {
-    this.velocity = cg.vadd(this.velocity, v);
-  }
-
-  setVelocity(v) {
-    this.velocity = v;
   }
 
   /**

@@ -2,13 +2,15 @@
 import { physicsObjects } from "./objects.js";
 import { enemies } from "./enemies.js";
 import { printMatrix } from "../../render/core/cg.js";
+import { getLowestY } from "./utils.js";
 
 export const debugLog = () => {
-  printObject(2);
+  console.log(getLowestY(enemies["0"].entity));
+  printEntity("object", 0);
 }
 
-const printObject = (id) => {
-  const obj = physicsObjects["" + id];
+const printEntity = (type, id) => {
+  const obj = type == "object" ? physicsObjects["" + id] : enemies["" + id];
   console.log(obj.getName());
   console.log("ROOT MATRIX");
   printMatrix(obj.getMatrix());

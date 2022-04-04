@@ -20,7 +20,7 @@ export const handleControllerActions = () => {
 
 
   if (hitR !== null) {
-    console.log(hitR.getName());
+    // console.log(hitR.getName());
     markHovered(hitR, "right");
     if (buttonWentDown("triggerR"))
       markSelected(hitR, "right");
