@@ -93,7 +93,8 @@ const handleHeldObject = (obj) => {
   // obj.setMatrix(CM).move(0, -.14, -.15).turnX(Math.PI/4);
   obj.setMatrix(CM).move(0, -.12, -.13).turnX(-Math.PI/4).turnY(Math.PI/2);
   // set velocity to allowing for throwing when released
-  obj.setVelocity(cg.vsub(obj.getPos(), obj.prevPos));
+  const deltaPos = cg.vsub(obj.getPos(), obj.prevPos);
+  obj.setVelocity(cg.scale(deltaPos, 1/obj.model.deltaTime));
 }
 
 const handleStoredObject = (obj) => {
@@ -102,7 +103,7 @@ const handleStoredObject = (obj) => {
 
 const applyPhysicsToObject = (obj) => {
   // apply gravity, friction, and restitution
-  if (getLowestY(obj.entity) + obj.velocity[1] <= .7366) { // .7366 meters because I want it to be on the table (29 inches)
+  if (getLowestY(obj.entity) + obj.getDeltaPos()[1] <= .7366) { // .7366 meters because I want it to be on the table (29 inches)
     obj.accelerantEvent("bounce");
     obj.accelerantEvent("friction");
   } else {

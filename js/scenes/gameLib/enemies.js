@@ -18,7 +18,9 @@ class Enemy extends BaseClass {
   constructor(model, initPosition, waveNumber, spawnTime) {
     super(model, initPosition);
 
-    this.gravity = 0.05;
+    this.gravity = 2;
+    this.acceleration = 0.2;
+    this.maxSpeed = 0.5;
 
     this.waveNumber = waveNumber;
     this.spawnTime = spawnTime;
@@ -58,6 +60,10 @@ export class Zombie extends Enemy {
                         .color(c.blue)
                         .move(0, 0, 0)
                         .scale(8, 10, 4) // proportions, scaled down later
+    this.zAxis    = this.entity.add("cube")
+                        .color(c.pink)
+                        .move(0, 0, 10)
+                        .scale(1, 1, 10)
     this.head     = this.entity.add("cube")
                         .color(c.red)
                         .move(0, 9*2, 0)

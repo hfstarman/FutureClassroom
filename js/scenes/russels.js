@@ -14,7 +14,7 @@ export const init = async model => {
    let knife = new Knife(model, [0, 1.5, -.5]);
 
    let zombie = new Zombie(model, [-1.3, 1.5, 0], 0);
-   zombie.entity.turnY(-Math.PI/4);
+   zombie.entity.turnY(Math.PI/4);
 
    model.animate(() => {
       // knife.entity.turnY(Math.sin(model.time) * .1);
