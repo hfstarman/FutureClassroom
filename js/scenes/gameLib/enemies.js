@@ -60,6 +60,10 @@ export class Zombie extends Enemy {
                         .color(c.blue)
                         .move(0, 0, 0)
                         .scale(8, 10, 4) // proportions, scaled down later
+    this.zAxis    = this.entity.add("cube")
+                        .color(c.pink)
+                        .move(0, 0, 10)
+                        .scale(1, 1, 10)
     this.head     = this.entity.add("cube")
                         .color(c.red)
                         .move(0, 9*2, 0)

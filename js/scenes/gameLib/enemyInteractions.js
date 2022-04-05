@@ -54,5 +54,26 @@ const getSpeedXZ = (enemy) => {
 const dropY = (v) => [v[0], 0, v[2]];
 
 const turnTowardsPlayer = (enemy) => {
+  // get direction to player
+  const playerMatrix = getCtrlrMatrix("right"); // ! change this to the headset later
+  const playerPosXZ = dropY(cg.getPos(playerMatrix));
+  const enemyPosXZ = dropY(enemy.getPos());
+  const directionXZ = cg.normalize(cg.vsub(playerPosXZ, enemyPosXZ));
+  
+  // get rotation of enemy in world space
+  let worldTurnY = getWorldTurnY(enemy);
+  const worldDegrees = worldTurnY * (180 / Math.PI);
+  // convert direction towards player to angle in radians
+  const theta = Math.atan2(directionXZ[0], directionXZ[2]);
+  const degrees = theta * (180 / Math.PI);
+  // console.log(worldDegrees);
+  console.log(getWorldTurnY(enemy) * (180 / Math.PI));
+  enemy.entity.turnY(theta - worldTurnY);
+}
 
+const getWorldTurnY = (enemy) => {
+  const enemyMatrix = enemy.entity.getGlobalMatrix();
+  const r1 = enemyMatrix[8];
+  const r2 = enemyMatrix[10];
+  return Math.atan2(r1, r2);
 }
