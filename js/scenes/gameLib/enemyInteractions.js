@@ -27,7 +27,7 @@ const gravityEvent = (enemy) => {
 }
 
 const moveTowardsPlayer = (enemy) => {
-  const playerMatrix = getCtrlrMatrix("right"); // ! change this to the headset later
+  const playerMatrix = enemy.model.viewMatrix(0);
   const playerPosXZ = dropY(cg.getPos(playerMatrix));
   const enemyPosXZ = dropY(enemy.getPos());
   const prevSpeedXZ = getSpeedXZ(enemy);
@@ -55,19 +55,17 @@ const dropY = (v) => [v[0], 0, v[2]];
 
 const turnTowardsPlayer = (enemy) => {
   // get direction to player
-  const playerMatrix = getCtrlrMatrix("right"); // ! change this to the headset later
+  const playerMatrix = enemy.model.viewMatrix(0);
+  cg.printMatrix(playerMatrix);
   const playerPosXZ = dropY(cg.getPos(playerMatrix));
   const enemyPosXZ = dropY(enemy.getPos());
   const directionXZ = cg.normalize(cg.vsub(playerPosXZ, enemyPosXZ));
   
   // get rotation of enemy in world space
   let worldTurnY = getWorldTurnY(enemy);
-  const worldDegrees = worldTurnY * (180 / Math.PI);
   // convert direction towards player to angle in radians
   const theta = Math.atan2(directionXZ[0], directionXZ[2]);
-  const degrees = theta * (180 / Math.PI);
-  // console.log(worldDegrees);
-  console.log(getWorldTurnY(enemy) * (180 / Math.PI));
+
   enemy.entity.turnY(theta - worldTurnY);
 }
 
