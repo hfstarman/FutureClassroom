@@ -18,7 +18,9 @@ class Enemy extends BaseClass {
   constructor(model, initPosition, waveNumber, spawnTime) {
     super(model, initPosition);
 
-    this.gravity = 0.05;
+    this.gravity = 2;
+    this.acceleration = 0.2;
+    this.maxSpeed = 0.5;
 
     this.waveNumber = waveNumber;
     this.spawnTime = spawnTime;

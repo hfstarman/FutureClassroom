@@ -35,8 +35,13 @@ export class BaseClass {
     this.setMatrix(cg.mm(this.getMatrix(), m));
   }
 
+  getDeltaPos() {
+    return cg.scale(this.velocity, this.model.deltaTime);
+  }
+
   applyVelocity() {
-    this.applyTransform(cg.mTranslate(this.velocity));
+    const dp = this.getDeltaPos();
+    this.applyTransform(cg.mTranslate(dp));
   }
 
   addVelocity(v) {

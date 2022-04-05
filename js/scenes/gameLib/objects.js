@@ -43,7 +43,7 @@ export class GameObject extends BaseClass {
 
     this.restitution = 0.1;
     this.friction = 0.2;
-    this.gravity = 0.05;
+    this.gravity = 2;
 
     this.defaultColor = c.white;
     this.hoverColor = c.orange;
