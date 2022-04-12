@@ -62,9 +62,8 @@ export const getTargetedObject = (hand) => {
 }
 
 const didIntersect = (beam, obj) => {
-  const rootMatrix = obj.getMatrix();
   return obj.entity._children.reduce((res, child) => (
-    res || beam.hitPrism(cg.mm(child.getMatrix(), rootMatrix))
+    res || beam.hitPrism(child.getGlobalMatrix())
   ), false);
 }
 

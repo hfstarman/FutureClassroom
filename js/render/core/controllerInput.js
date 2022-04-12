@@ -74,8 +74,8 @@ export function ControllerBeam(model, hand) {
    let bend = Math.PI/4;
    this.beam = model.add();
    this.beam.add('tubeZ').color(10,0,0).turnX(-bend)
-                                       .move(0,0,-10.01)
-                                       .scale(.001,.001,10);
+                                       .move(0,0,-3.01)
+                                       .scale(.001,.001,3);
    this.update = matrix => {
       let m = matrix ? matrix : controllerMatrix[hand],
           update = (offset, fallback) =>

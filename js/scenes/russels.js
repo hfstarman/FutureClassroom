@@ -13,7 +13,7 @@ export const init = async model => {
 
    let knife = new Knife(model, [0, 1.5, -.5]);
 
-   let zombie = new Zombie(model, [-4.3, 1.5, 0], 0);
+   let zombie = new Zombie(model, [-1, 1.5, -1], 0);
    zombie.entity.turnY(Math.PI);
 
    model.animate(() => {

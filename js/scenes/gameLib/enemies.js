@@ -23,6 +23,7 @@ class Enemy extends BaseClass {
     this.maxSpeed = 0.5;
     this.grounded = false;
 
+    this.state = "alive"; // alive, dead
     this.waveNumber = waveNumber;
     this.spawnTime = spawnTime;
     this.strideAngle = Math.PI/12;
@@ -106,5 +107,31 @@ export class Zombie extends Enemy {
     // this.legJointR.turnX(Math.PI/12);
     const legLength = this.legL.getGlobalMatrix()[5]*2;
     this.strideLength = 2 * legLength * Math.sin(this.strideAngle);
+
+    this.hitboxes = {
+      head: [
+        {posOffset: [0, 0, 0], radius: getSize(this.head, "Y") * Math.sqrt(2)},
+      ],
+      torso: [
+        {posOffset: [0, 0, 0], radius: getSize(this.torso, "Y") * 1.8},
+        {posOffset: [0, -(getSize(this.torso, "Y") * 3), 0], radius: getSize(this.torso, "Y") * .8},
+      ],
+    }
+  }
+}
+
+/**
+ * @param {string} plane 'X', 'Y', or 'Z'
+ */
+ const getSize = (entity, plane) => {
+  switch (plane.toLowerCase()) {
+    case "x":
+      return entity.getGlobalMatrix()[0];
+    case "y":
+      return entity.getGlobalMatrix()[5];
+    case "z":
+      return entity.getGlobalMatrix()[10];
+    default:
+      throw new Error("Invalid plane");
   }
 }
