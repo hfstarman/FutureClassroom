@@ -40,6 +40,7 @@ export class GameObject extends BaseClass {
     this.handHeldIn = null; // left or right
     this.selectedBy = null; // left or right
     this.hoveredBy = null; // left or right
+    this.isDeadly = false;
 
     this.restitution = 0.1;
     this.friction = 0.2;
@@ -92,6 +93,7 @@ export class Knife extends GameObject {
     super(model, initPosition);
     this.entityType = "Knife";
     this.defaultColor = c.black;
+    this.isDeadly = true;
 
     this.handle     = this.entity.add("tubeY")
                           .move(0, -0.03, 0)
@@ -102,5 +104,28 @@ export class Knife extends GameObject {
     this.blade      = this.entity.add("cube")
                           .move(0, 0.11, 0)
                           .scale(0.03, 0.10, 0.008);
+
+    this.hitboxes = {
+      blade: [
+        { posOffset: [0, 0, 0], radius: getSize(this.blade, "Y") * 0.8 },
+      ]
+    };
+  
+  }
+}
+
+/**
+ * @param {string} plane 'X', 'Y', or 'Z'
+ */
+const getSize = (entity, plane) => {
+  switch (plane.toLowerCase()) {
+    case "x":
+      return entity.getGlobalMatrix()[0];
+    case "y":
+      return entity.getGlobalMatrix()[5];
+    case "z":
+      return entity.getGlobalMatrix()[10];
+    default:
+      throw new Error("Invalid plane");
   }
 }

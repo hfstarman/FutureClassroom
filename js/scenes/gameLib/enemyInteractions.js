@@ -1,7 +1,6 @@
 // @ts-check
 import { enemies } from "./enemies.js";
 import { getLowestY } from "./utils.js";
-import { getCtrlrMatrix } from "./controllers.js";
 import * as cg from "../../render/core/cg.js";
 
 export const handleEnemyMovement = () => {
@@ -10,8 +9,8 @@ export const handleEnemyMovement = () => {
     if (!enemy.grounded) {
       gravityEvent(enemy);
     } else {
-      moveTowardsPlayer(enemy);
-      walkingAnimation(enemy);
+      // moveTowardsPlayer(enemy);
+      // walkingAnimation(enemy);
     }
     turnTowardsPlayer(enemy);
     enemy.applyVelocity();
