@@ -21,9 +21,12 @@ class Enemy extends BaseClass {
     this.gravity = 2;
     this.acceleration = 0.2;
     this.maxSpeed = 0.5;
+    this.grounded = false;
 
+    this.state = "alive"; // alive, dead
     this.waveNumber = waveNumber;
     this.spawnTime = spawnTime;
+    this.strideAngle = Math.PI/12;
 
     this.id = enemyId++;
     enemies[this.id] = this;
@@ -56,36 +59,79 @@ export class Zombie extends Enemy {
 
     const scale = .02;
 
-    this.torso    = this.entity.add("cube")
-                        .color(c.blue)
-                        .move(0, 0, 0)
-                        .scale(8, 10, 4) // proportions, scaled down later
-    this.zAxis    = this.entity.add("cube")
-                        .color(c.pink)
-                        .move(0, 0, 10)
-                        .scale(1, 1, 10)
-    this.head     = this.entity.add("cube")
-                        .color(c.red)
-                        .move(0, 9*2, 0)
-                        .scale(8, 8, 8) 
-    this.leftArm  = this.entity.add("cube")
-                        .color(c.green)
-                        .move(6*2, -1, 0)
-                        .scale(4, 11, 4)
-    this.rightArm = this.entity.add("cube")
-                        .color(c.purple)
-                        .move(-6*2, -1, 0)
-                        .scale(4, 11, 4)
-    this.leftLeg  = this.entity.add("cube")
-                        .color(c.orange)
-                        .move(4, -(5+7.5)*2, 0)
-                        .scale(4, 15, 4)
-    this.rightLeg = this.entity.add("cube")
-                        .color(c.yellow)
-                        .move(-4, -(5+7.5)*2, 0)
-                        .scale(4, 15, 4)
-    this.foot = this.rightLeg.add();
+    this.torso      = this.entity.add("cube")
+                          .color(c.blue)
+                          .move(0, 0, 0)
+                          .scale(8, 10, 4) // proportions, scaled down later
+    this.zAxis      = this.entity.add("cube")
+                          .color(c.pink)
+                          .move(0, 0, 10)
+                          .scale(1, 1, 10)
+    this.head       = this.entity.add("cube")
+                          .color(c.red)
+                          .move(0, 9*2, 0)
+                          .scale(8, 8, 8) 
+    this.armJointL  = this.entity.add()
+                          .move(6*2, 3*2, 0)
+    this.armL       = this.armJointL.add("cube")
+                          .color(c.green)
+                          .move(0, -7, 0)
+                          .scale(4, 11, 4)
+    this.armJointR  = this.entity.add()
+                          .move(-6*2, 3*2, 0)
+    this.armR       = this.armJointR.add("cube")
+                          .color(c.purple)
+                          .move(0, -7, 0)
+                          .scale(4, 11, 4)
+    this.legJointL  = this.entity.add()
+                          .move(4, -10, 0)
+    this.legL       = this.legJointL.add("cube")
+                          .color(c.orange)
+                          .move(0, -15, 0)
+                          .scale(3.99, 15, 3.99)
+    this.legJointR  = this.entity.add()
+                          .move(-4, -10, 0)
+    this.legR       = this.legJointR.add("cube")
+                          .color(c.yellow)
+                          .move(0, -15, 0)
+                          .scale(3.99, 15, 3.99)
+    this.foot       = this.legR.add();
 
     scaleProperly(this.entity, scale);
+
+    // put the arms up
+    this.armJointL.turnX(-Math.PI/2);
+    this.armJointR.turnX(-Math.PI/2);
+
+    // this.legJointL.turnX(-Math.PI/12);
+    // this.legJointR.turnX(Math.PI/12);
+    const legLength = this.legL.getGlobalMatrix()[5]*2;
+    this.strideLength = 2 * legLength * Math.sin(this.strideAngle);
+
+    this.hitboxes = {
+      head: [
+        {posOffset: [0, 0, 0], radius: getSize(this.head, "Y") * Math.sqrt(2)},
+      ],
+      torso: [
+        {posOffset: [0, 0, 0], radius: getSize(this.torso, "Y") * 1.8},
+        {posOffset: [0, -(getSize(this.torso, "Y") * 3), 0], radius: getSize(this.torso, "Y") * .8},
+      ],
+    }
+  }
+}
+
+/**
+ * @param {string} plane 'X', 'Y', or 'Z'
+ */
+ const getSize = (entity, plane) => {
+  switch (plane.toLowerCase()) {
+    case "x":
+      return entity.getGlobalMatrix()[0];
+    case "y":
+      return entity.getGlobalMatrix()[5];
+    case "z":
+      return entity.getGlobalMatrix()[10];
+    default:
+      throw new Error("Invalid plane");
   }
 }

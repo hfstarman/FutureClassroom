@@ -1,16 +1,18 @@
 // @ts-check
 import { enemies } from "./enemies.js";
 import { getLowestY } from "./utils.js";
-import { getCtrlrMatrix } from "./controllers.js";
 import * as cg from "../../render/core/cg.js";
 
 export const handleEnemyMovement = () => {
 
   Object.values(enemies).forEach(enemy => {
-    gravityEvent(enemy);
-    // maybe only move to player if grounded (add field to enemy class)
+    if (!enemy.grounded) {
+      gravityEvent(enemy);
+    } else {
+      // moveTowardsPlayer(enemy);
+      // walkingAnimation(enemy);
+    }
     turnTowardsPlayer(enemy);
-    // moveTowardsPlayer(enemy);
     enemy.applyVelocity();
   })
 
@@ -21,9 +23,40 @@ const gravityEvent = (enemy) => {
     enemy.accelerantEvent("gravity");
   } else {
     // stop moving down if at ground
+    enemy.grounded = true;
     const newVelocity = dropY(enemy.velocity);
     enemy.setVelocity(newVelocity);
   }
+}
+
+const walkingAnimation = (enemy) => {
+  // the animation is a sinusoidal wave
+  // that is scaled by the speed of the enemy
+  const speed = /*getSpeedXZ(enemy)*/ enemy.maxSpeed * (1/enemy.strideLength) * Math.PI;
+    // console.log(speed);
+  // console.log(speed);
+
+  // get the current radians
+  // then add delta radians
+  // set 
+
+  const maxRadians = enemy.strideAngle;
+  // const temp = speed * enemy.model.time;
+  // console.log(getLocalTurnX(enemy.legJointL) * (180/Math.PI));
+  // let currentAngle = getLocalTurnX(enemy.legJointL);
+  // currentAngle = Math.asin(currentAngle / maxRadians);
+
+  // const deltaAngle = (speed * enemy.model.deltaTime);
+  // console.log(deltaAngle)
+  // let newAngle = currentAngle + deltaAngle;
+  // newAngle -= newAngle > Math.PI * 2 ? Math.PI * 2 : 0;
+  // const radians = newAngle * maxRadians;
+  // const radians = Math.sin(newAngle) * maxRadians;
+  const radians = Math.sin(speed * enemy.model.time) * maxRadians;
+  const jointLPos = cg.getPos(enemy.legJointL.getMatrix());
+  const jointRPos = cg.getPos(enemy.legJointR.getMatrix());
+  enemy.legJointL.identity().move(jointLPos).turnX(radians);
+  enemy.legJointR.identity().move(jointRPos).turnX(-radians);
 }
 
 const moveTowardsPlayer = (enemy) => {
@@ -42,7 +75,6 @@ const moveTowardsPlayer = (enemy) => {
   // Y is handled by gravity. 
   // This function only handles X and Z
   newVelocity[1] = enemy.velocity[1];
-  console.log(newVelocity);
   enemy.setVelocity(newVelocity);
 }
 
@@ -56,22 +88,28 @@ const dropY = (v) => [v[0], 0, v[2]];
 const turnTowardsPlayer = (enemy) => {
   // get direction to player
   const playerMatrix = enemy.model.viewMatrix(0);
-  cg.printMatrix(playerMatrix);
   const playerPosXZ = dropY(cg.getPos(playerMatrix));
   const enemyPosXZ = dropY(enemy.getPos());
   const directionXZ = cg.normalize(cg.vsub(playerPosXZ, enemyPosXZ));
   
   // get rotation of enemy in world space
-  let worldTurnY = getWorldTurnY(enemy);
+  let worldTurnY = getWorldTurnY(enemy.entity);
   // convert direction towards player to angle in radians
   const theta = Math.atan2(directionXZ[0], directionXZ[2]);
 
   enemy.entity.turnY(theta - worldTurnY);
 }
 
-const getWorldTurnY = (enemy) => {
-  const enemyMatrix = enemy.entity.getGlobalMatrix();
-  const r1 = enemyMatrix[8];
-  const r2 = enemyMatrix[10];
+const getLocalTurnX = (entity) => {
+  const entityMatrix = entity.getMatrix();
+  const r1 = entityMatrix[9];
+  const r2 = entityMatrix[10];
+  return Math.atan2(r1, r2); 
+}
+
+const getWorldTurnY = (entity) => {
+  const entityMatrix = entity.getGlobalMatrix();
+  const r1 = entityMatrix[8];
+  const r2 = entityMatrix[10];
   return Math.atan2(r1, r2);
 }
