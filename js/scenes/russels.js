@@ -19,6 +19,7 @@ export const init = async model => {
    model.animate(() => {
       // knife.entity.turnY(Math.sin(model.time) * .1);
       // zombie.leftLeg.turnX(1 * model.deltaTime);
+
       runGame();
    });
 }
