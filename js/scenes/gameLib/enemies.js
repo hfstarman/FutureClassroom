@@ -32,6 +32,16 @@ class Enemy extends BaseClass {
     enemies[this.id] = this;
   }
 
+  delete() {
+    removeEnemy(this);
+    super.delete();
+  }
+
+  death() {
+    this.state = "dead";
+    this.delete();
+  }
+
   accelerantEvent(typeChange) {
     switch (typeChange) {
       case "hit player":

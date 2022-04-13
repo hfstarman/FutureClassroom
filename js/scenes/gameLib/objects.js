@@ -55,6 +55,11 @@ export class GameObject extends BaseClass {
     physicsObjects[this.id] = this;
   }
 
+  delete() {
+    removePhysicsObject(this);
+    super.delete();
+  }
+
   /**
    * @param {string} typeChange The name of the event to be applied
    */

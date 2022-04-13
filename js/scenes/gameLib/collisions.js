@@ -25,6 +25,8 @@ export const handleCollisions = () => {
   }
 
   if (closestEnemyHit !== null) {
+    closestEnemyHit.death();
+    murderWeapon.resetVelocity();
     murderWeapon.selectedBy = "right"; //! DEBUGGING
     // set obj velocity to zero
     // set enemy state to dead
