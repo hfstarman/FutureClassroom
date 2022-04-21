@@ -11,4 +11,8 @@ Handler.extensions_map.update({
 
 httpd = socketserver.TCPServer(("", PORT), Handler)
 print(f"Starting server on http://localhost:{PORT}")
-httpd.serve_forever()
+
+try:
+      httpd.serve_forever()
+except KeyboardInterrupt:
+      print("\rServer Stopped")
