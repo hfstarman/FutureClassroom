@@ -2,10 +2,11 @@
 import { Cube, Knife } from "./gameLib/objects.js";
 import { Zombie } from "./gameLib/enemies.js";
 import c from "./gameLib/colors.js";
-import runGame from "./gameLib/main.js";
+import { initGame, runGame } from "./gameLib/main.js";
 
 export const init = async model => {
    console.log("init russels")
+   initGame(model);
 
    new Cube(model, [.4, 1.5, -.5]);
    let target2 = new Cube(model, [-.4, 1.5, -.5]);
