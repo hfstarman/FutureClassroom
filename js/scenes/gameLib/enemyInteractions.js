@@ -1,11 +1,11 @@
 // @ts-check
-import { enemies } from "./enemies.js";
+import { enemies, getLiveEnemies } from "./enemies.js";
 import { getLowestY } from "./utils.js";
 import * as cg from "../../render/core/cg.js";
 
 export const handleEnemyMovement = () => {
 
-  Object.values(enemies).forEach(enemy => {
+  getLiveEnemies().forEach(enemy => {
     if (!enemy.grounded) {
       gravityEvent(enemy);
     } else {
