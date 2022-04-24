@@ -9,6 +9,9 @@ export const removeEnemy = (enemy) => {
   delete enemies["" + enemy.id];
 }
 
+export const getLiveEnemies = () => (
+  Object.values(enemies).filter(e => e.state === "alive")
+);
 // enemy has to spawn at a certain time
 // enemy has to move towards player (and turning accordingly)
 // enemy has to deal damage to player when nearby
@@ -26,6 +29,7 @@ class Enemy extends BaseClass {
     this.state = "alive"; // alive, dead
     this.waveNumber = waveNumber;
     this.spawnTime = spawnTime;
+    this.damage = 10;
     this.strideAngle = Math.PI/12;
 
     this.id = enemyId++;
@@ -46,6 +50,7 @@ class Enemy extends BaseClass {
     switch (typeChange) {
       case "hit player":
         // move backwards a little, set velocity to max speed backwards
+        this.velocity = cg.scale(this.velocity, -1);
         break;
       case "move to player":
         // move towards player
@@ -108,7 +113,7 @@ export class Zombie extends Enemy {
     this.foot       = this.legR.add();
 
     scaleProperly(this.entity, scale);
-
+    const armLength = this.armL.getGlobalMatrix()[5]*2;
     // put the arms up
     this.armJointL.turnX(-Math.PI/2);
     this.armJointR.turnX(-Math.PI/2);
@@ -117,7 +122,8 @@ export class Zombie extends Enemy {
     // this.legJointR.turnX(Math.PI/12);
     const legLength = this.legL.getGlobalMatrix()[5]*2;
     this.strideLength = 2 * legLength * Math.sin(this.strideAngle);
-
+    
+    this.attackRange = armLength;
     this.hitboxes = {
       head: [
         {posOffset: [0, 0, 0], radius: getSize(this.head, "Y") * Math.sqrt(2)},

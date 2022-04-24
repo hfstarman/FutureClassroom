@@ -27,6 +27,7 @@
 
    export const magnitude = (v) => norm(v);
    export const vZero = () => [0,0,0];
+   export const dropY = (v) => [v[0], 0, v[2]];
 
 // NOISE METHOD
 

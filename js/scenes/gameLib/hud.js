@@ -19,7 +19,7 @@ export const getHUD = () => {
 }
 
 export const showHUD = () => {
-  getHUD().animate();
+  getHUD().displayHUD();
 }
 
 class HUD {
@@ -29,6 +29,7 @@ class HUD {
     this.score = 0;
     this.wave = 1;
     this.health = 10;
+    this.isGameOver = false;
 
     this.hudLabels = [
       {
@@ -51,13 +52,46 @@ class HUD {
     this.hudLabels.forEach(l => this.hud.add('label').move(l.pos).scale(.1));
   }
 
-  animate() {
+  displayHUD() {
+    if (!this.isGameOver)
+      this.displayStatus();
+    else
+      this.displayGameOver();
+  }
+
+  displayStatus() {
     this.hud.setMatrix(this.model.viewMatrix()).move(0,0,-.3).turnY(Math.PI).scale(.1);
     this.hudLabels.forEach((label, i) => {
       const entity = this.hud.child(i);
       entity.info(label.text.replace(/\?\?/, this[label.field]));
     });
   }
+
+  displayGameOver() {
+    if (this.hud._children.length > 1) {
+      this.hud._children = []; // delete the main hud
+      this.hud.add('label').move([0, 0, 0]).scale(1.5).info("Game Over");
+    }
+    this.hud.setMatrix(this.model.viewMatrix()).move(0,0,-1).turnY(Math.PI).scale(.1);
+  }
+
+  increaseHealth(amount) {
+    this.health += amount;
+  }
+
+  decreaseHealth(amount) {
+    this.health = Math.max(0, this.health - amount);
+    if (this.health === 0) this.isGameOver = true;
+  }
+
+  increaseScore(amount) {
+    this.score += amount;
+  }
+
+  incrementWave() {
+    this.wave++;
+  }
+
 }
 
 // class Player {
