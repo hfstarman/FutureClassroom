@@ -23,11 +23,21 @@ export const showHUD = () => {
 }
 
 class HUD {
+  // ! turn this into a static class
+  // static model = null;
+  // static hud = null;
+  // static score = 0;
+  // static wave = 0;
+  // static health = 10;
+  // static isGameOver = false;
+  // static init(model) {
+  // }
+
   constructor(model) {
     this.model = model;
     this.hud = model.add();
     this.score = 0;
-    this.wave = 1;
+    this.wave = 0;
     this.health = 10;
     this.isGameOver = false;
 
@@ -89,7 +99,7 @@ class HUD {
   }
 
   incrementWave() {
-    this.wave++;
+    return ++this.wave;
   }
 
 }
