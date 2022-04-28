@@ -18,7 +18,7 @@ export const getLiveEnemies = () => (
 // enemy can't be in the same space as another enemy
 
 class Enemy extends BaseClass {
-  constructor(model, initPosition, waveNumber, spawnTime) {
+  constructor(model, initPosition) {
     super(model, initPosition);
 
     this.gravity = 2;
@@ -27,9 +27,9 @@ class Enemy extends BaseClass {
     this.grounded = false;
 
     this.state = "alive"; // alive, dead
-    this.waveNumber = waveNumber;
-    this.spawnTime = spawnTime;
-    this.damage = 10;
+    // this.waveNumber = waveNumber;
+    // this.spawnTime = spawnTime;
+    this.damage = 1;
     this.strideAngle = Math.PI/12;
 
     this.id = enemyId++;
@@ -69,8 +69,8 @@ const scaleProperly = (entity, scale) => {
 }
 
 export class Zombie extends Enemy {
-  constructor(model, initPosition, waveNumber, spawnTime) {
-    super(model, initPosition, waveNumber, spawnTime);
+  constructor(model, initPosition) {
+    super(model, initPosition);
 
     const scale = .02;
 

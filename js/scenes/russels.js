@@ -2,20 +2,42 @@
 import { Cube, Knife } from "./gameLib/objects.js";
 import { Zombie } from "./gameLib/enemies.js";
 import c from "./gameLib/colors.js";
+import { createSpawn } from "./gameLib/utils.js";
 import { initGame, runGame } from "./gameLib/main.js";
 
 export const init = async model => {
    console.log("init russels")
-   initGame(model);
 
-   new Cube(model, [.4, 1.5, -.5]);
-   let target2 = new Cube(model, [-.4, 1.5, -.5]);
-   target2.defaultColor = c.purple;
+   // new Cube(model, [.4, 1.5, -.5]);
+   // let target2 = new Cube(model, [-.4, 1.5, -.5]);
+   // target2.defaultColor = c.purple;
 
-   let knife = new Knife(model, [0, 1.5, -.5]);
+   // let knife = new Knife(model, [0, 1.5, -.5]);
 
-   let zombie = new Zombie(model, [-1, 1.5, -1], 0);
-   zombie.entity.turnY(Math.PI);
+   // let zombie = new Zombie(model, [-1, 1.5, -1], 0);
+   // zombie.entity.turnY(Math.PI);
+
+   // { entityType, spawnTime, position }
+   const spawns = {
+      1: {
+         objects: [
+            createSpawn("cube", 0, [0, 1.5, -.5]),
+            createSpawn("cube", 2, [.4, 1.5, -.5]),
+            createSpawn("knife", 4, [0, 1.5, -.5]),
+         ],
+         enemies: [
+            createSpawn("zombie", 8, [-1, 1.5, -1]),
+         ]
+      },
+      2: {
+         objects: [],
+         enemies: [
+            createSpawn("zombie", 8, [-3, 1.5, -1]),
+         ]
+      }
+   }
+
+   initGame(model, spawns);
 
    model.animate(() => {
       // knife.entity.turnY(Math.sin(model.time) * .1);

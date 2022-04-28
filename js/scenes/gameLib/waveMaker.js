@@ -1,6 +1,8 @@
+// @ts-check
 import { Zombie } from './enemies.js';
 import { Cube, Knife } from './objects.js';
 import { getHUD } from './hud.js';
+import { enemies } from './enemies.js';
 
 // Create waves object
 // key -> wave number
@@ -8,30 +10,36 @@ import { getHUD } from './hud.js';
 
 export class WaveMaker {
   static waveSpawner = null;
-  static waveSpawns = {objects: [], enemies: []};
+  static waveSpawns = {};
   static model = null;
+  static numberOfWaves = 0;
 
-  static init(waveSpawns, model) {
+  static init(model, waveSpawns) {
     WaveMaker.waveSpawns = waveSpawns;
     WaveMaker.model = model;
+    WaveMaker.numberOfWaves = Object.keys(waveSpawns).length;
   }
 
   static makeWaves() {
-    if (canStartNextWave()) {
+    if (WaveMaker.canStartNextWave()) {
+      if (getHUD().wave >= WaveMaker.numberOfWaves) return;
       let currentWave = getHUD().incrementWave();
-      initWave(currentWave);
+      WaveMaker.initWave(currentWave);
     }
-    waveSpawner.handleSpawns();
+    WaveMaker.waveSpawner.handleSpawns();
   }
 
   static canStartNextWave() {
-    const numOfLiveEnemies = object.keys(enemies).length;
-    return numOfLiveEnemies === 0 && (waveSpawner === null || waveSpawner.isEmpty());
+    const numOfLiveEnemies = Object.keys(enemies).length;
+    return numOfLiveEnemies === 0 && 
+          (WaveMaker.waveSpawner === null || WaveMaker.waveSpawner.isEmpty());
   }
   
   static initWave(waveNumber) {
-    const spawns = waveSpawns[waveNumber];
-    waveSpawner = new WaveSpawner(waveNumber, spawns, model)
+    console.log(waveNumber);
+    const spawns = WaveMaker.waveSpawns["" + waveNumber];
+    console.log(spawns);
+    WaveMaker.waveSpawner = new WaveSpawner(waveNumber, spawns, WaveMaker.model)
   }
 
 }
@@ -40,7 +48,7 @@ export class WaveMaker {
 class WaveSpawner {
   constructor(waveNumber, spawns, model) {
     this.waveNumber = waveNumber;
-    this.entitiesLeftToSpawn = this.setSpawnOrder(spawns); // {objects, enemies} // sort arrays in reverse order by time
+    this.entitiesLeftToSpawn = WaveSpawner.setSpawnOrder(spawns); // {objects, enemies} // sort arrays in reverse order by time
     this.waveStartTime = model.time;
     this.model = model;
   }
@@ -52,30 +60,33 @@ class WaveSpawner {
       const entitySet = spawns[key];
       entitySet.sort((a, b) => (b.spawnTime - a.spawnTime));
     })
+    return spawns;
   }
 
   isEmpty() {
     const entitySets = Object.values(this.entitiesLeftToSpawn)
-    return entitySets.reduce(ret, entities => (
-      ret && entities > 0
+    return entitySets.reduce((ret, entities) => (
+      ret && entities.length === 0
     ), true)
   }
 
   handleSpawns() {
-    const currentSpawns = getCurrentSpawns();
-    spawnAll(currentSpawns);
+    const currentSpawns = this.getCurrentSpawns();
+    this.spawnAll(currentSpawns);
   }
 
   getCurrentSpawns() {
-    const keys = Object.keys(this.entitesLeftToSpawn);
-    return keys.reduce((spawns, key) => (
-      [...spawns, ...this.extractCurrentSpawns(key)]
-    ), [])
+    const keys = Object.keys(this.entitiesLeftToSpawn);
+    return keys.reduce((spawns, key) => {
+      const extracted = this.extractCurrentSpawns(key);
+      return [...spawns, ...extracted];
+    }, []);
   }
 
   extractCurrentSpawns(entitySetKey) {
+    const spawns = [];
     const entitySet = this.entitiesLeftToSpawn[entitySetKey];
-    while(entitySet.length > 0 && canSpawn(entitySet.at(-1))) 
+    while(entitySet.length > 0 && this.canSpawn(entitySet.at(-1))) 
       spawns.push(entitySet.pop());
     return spawns;
   }

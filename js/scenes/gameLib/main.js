@@ -7,9 +7,9 @@ import { createHUD, showHUD, getHUD } from "./hud.js";
 import { handleEnemyAttack } from "./enemyAttack.js";
 import { WaveMaker } from "./waveMaker.js";
 
-export function initGame(model) {
+export function initGame(model, waveSpawns) {
   createHUD(model);
-  // WaveMaker.init(model, waveSpawns);
+  WaveMaker.init(model, waveSpawns);
 }
 
 export function runGame() {
@@ -19,7 +19,7 @@ export function runGame() {
   setObjectColors();
   handleCollisions();
   handleEnemyAttack();
-  // WaveMaker.makeWaves();
+  WaveMaker.makeWaves();
   handleEnemyMovement();
   handleObjectMovement();
   handleControllerActions();

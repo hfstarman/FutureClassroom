@@ -27,15 +27,15 @@ export const handleCollisions = () => {
   if (closestEnemyHit !== null) {
     closestEnemyHit.death();
     murderWeapon.resetVelocity();
-    murderWeapon.selectedBy = "right"; //! DEBUGGING
+    // murderWeapon.selectedBy = "right"; //! DEBUGGING
     // set obj velocity to zero
     // set enemy state to dead
     // trigger enemy death animation
     // remove enemy from enemies
-  } else {
-    // ! DEBUGGING, REMOVE THIS
-    const knife = physicsObjects["2"];
-    knife.selectedBy = null;
+  // } else {
+  //   // ! DEBUGGING, REMOVE THIS
+  //   const knife = physicsObjects["2"];
+  //   knife.selectedBy = null;
   }
 }
 

@@ -25,3 +25,7 @@ const getLowestY_aux = (entity, parentWorldMatrix) => {
   }
   return lowestY;
 }
+
+export const createSpawn = (entityType, spawnTime, position) => (
+  {entityType, spawnTime, position}
+);
