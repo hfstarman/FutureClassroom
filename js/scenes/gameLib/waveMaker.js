@@ -42,6 +42,10 @@ export class WaveMaker {
     WaveMaker.waveSpawner = new WaveSpawner(waveNumber, spawns, WaveMaker.model)
   }
 
+  static wonGame() {
+    return getHUD().wave >= WaveMaker.numberOfWaves && WaveMaker.canStartNextWave();
+  }
+
 }
 
 

@@ -1,4 +1,5 @@
 // @ts-check
+import { WaveMaker } from "./waveMaker.js";
 
 let gameHUD = null;
 
@@ -53,7 +54,9 @@ class HUD {
   }
 
   displayHUD() {
-    if (!this.isGameOver)
+    if (WaveMaker.wonGame())
+      this.displayWin();
+    else if (!this.isGameOver)
       this.displayStatus();
     else
       this.displayGameOver();
@@ -68,9 +71,19 @@ class HUD {
   }
 
   displayGameOver() {
-    if (this.hud._children.length > 1) {
+    if (this.hud._children.length > 2) {
       this.hud._children = []; // delete the main hud
       this.hud.add('label').move([0, 0, 0]).scale(1.5).info("Game Over");
+      this.hud.add('label').move([0, -2.5, 0]).scale(1.5).info("Score: " + this.score);
+    }
+    this.hud.setMatrix(this.model.viewMatrix()).move(0,0,-1).turnY(Math.PI).scale(.1);
+  }
+
+  displayWin() {
+    if (this.hud._children.length > 2) {
+      this.hud._children = []; // delete the main hud
+      this.hud.add('label').move([0, 0, 0]).scale(1.5).info("YOU WIN!");
+      this.hud.add('label').move([0, -2.5, 0]).scale(.5).info("Score: " + this.score);
     }
     this.hud.setMatrix(this.model.viewMatrix()).move(0,0,-1).turnY(Math.PI).scale(.1);
   }

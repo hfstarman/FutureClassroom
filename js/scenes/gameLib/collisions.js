@@ -2,6 +2,7 @@
 import * as cg from "../../render/core/cg.js";
 import { enemies } from "./enemies.js";
 import { physicsObjects } from "./objects.js";
+import { getHUD } from "./hud.js";
 
 export const handleCollisions = () => {
   const movingObjects = Object.values(physicsObjects).filter(
@@ -26,6 +27,7 @@ export const handleCollisions = () => {
 
   if (closestEnemyHit !== null) {
     closestEnemyHit.death();
+    getHUD().increaseScore(100);
     murderWeapon.resetVelocity();
     // murderWeapon.selectedBy = "right"; //! DEBUGGING
     // set obj velocity to zero
