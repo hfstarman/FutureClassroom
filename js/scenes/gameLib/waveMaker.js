@@ -36,9 +36,7 @@ export class WaveMaker {
   }
   
   static initWave(waveNumber) {
-    console.log(waveNumber);
     const spawns = WaveMaker.waveSpawns["" + waveNumber];
-    console.log(spawns);
     WaveMaker.waveSpawner = new WaveSpawner(waveNumber, spawns, WaveMaker.model)
   }
 

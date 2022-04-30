@@ -93,7 +93,8 @@ const handleHeldObject = (obj) => {
   obj.setMatrix(CM).move(0, -.12, -.13).turnX(-Math.PI/4).turnY(Math.PI/2);
   // set velocity to allowing for throwing when released
   const deltaPos = cg.vsub(obj.getPos(), obj.prevPos);
-  obj.setVelocity(cg.scale(deltaPos, 1/obj.model.deltaTime));
+  obj.appendThrowVelocity(cg.scale(deltaPos, 1/obj.model.deltaTime));
+  // obj.setVelocity(cg.scale(deltaPos, 1/obj.model.deltaTime));
 }
 
 const handleStoredObject = (obj) => {
@@ -150,6 +151,8 @@ export const tryGrab = (hand) => {
 export const releaseGrab = (hand) => {
   const grabbedObj = grabbedObjects[hand];
   if (grabbedObj !== null) {
+    grabbedObj.smoothThrow();
+    grabbedObj.resetThrowVelocities();
     grabbedObj.state = state.free;
     grabbedObjects[hand] = null;
   }
