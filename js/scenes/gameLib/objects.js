@@ -125,6 +125,7 @@ export class Knife extends GameObject {
     this.entityType = "Knife";
     this.defaultColor = c.black;
     this.isDeadly = true;
+    this.fromInfiniteThrow = false;
 
     this.handle     = this.entity.add("tubeY")
                           .move(0, -0.03, 0)
@@ -142,6 +143,10 @@ export class Knife extends GameObject {
       ]
     };
   
+  }
+
+  makeTemporary() {
+    this.fromInfiniteThrow = true;
   }
 }
 
@@ -195,6 +200,17 @@ export class InfinitePower extends PowerUp {
     this.hoverColor = c.lavender;
     this.selectColor = c.violet;
   }
+
+  activate() {
+    super.activate();
+    getHUD().setPower(this.powerUpType, 10);
+  }
+}
+
+export const removeTemporaryObjects = () => {
+  Object.values(physicsObjects)
+        .filter(obj => obj.fromInfiniteThrow)
+        .forEach(obj => obj.delete());
 }
 
 /**

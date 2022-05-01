@@ -3,11 +3,12 @@ import * as cg from "../../render/core/cg.js";
 import { getCtrlrMatrix } from "./controllers.js";
 import { physicsObjects } from "./objects.js";
 import { state } from "./objects.js";
-import { GameObject } from "./objects.js";
+import { GameObject, Knife } from "./objects.js";
 import { lcb, rcb } from "../../handle_scenes.js";
 import { solveBallisticArc } from "../../util/math.js";
 import c from "./colors.js";
 import { getLowestY } from "./utils.js";
+import { getHUD } from "./hud.js";
 
 const grabDistance = 0.3;
 
@@ -153,6 +154,10 @@ export const tryGrab = (hand) => {
   
   if (closestObj !== null) {
     grabObject(closestObj, hand);
+  } else if (getHUD().activePowerUp === "Infinite Throw") {
+    const newKnife = new Knife(getHUD().model, [0, 0, 0]);
+    newKnife.makeTemporary();
+    grabObject(newKnife, hand);
   }
 }
 
