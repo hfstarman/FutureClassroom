@@ -1,6 +1,7 @@
 // import globally-available sub-systems
 import * as global from "./global.js";
 import { ControllerBeam } from "./render/core/controllerInput.js";
+import { removeGameReferences } from "./scenes/gameLib/garbageCollection.js";
 
 window.currentName = '';
 window.currentID   = -1;
@@ -49,6 +50,7 @@ const chooseFlag = name => {
 window.chooseFlag = chooseFlag;
 
 const onReloadDefault = async (thisScene, model, ctx, ctxForever) => {
+   removeGameReferences();
    model.clear();
    global.gltfRoot.clearNodes();
    if (thisScene.init) {
@@ -329,6 +331,7 @@ function runDemo(demo) {
 function stopDemo(demo) {
    demo._isStarted = false;
    demo._isReady = false;
+   removeGameReferences();
    if(currentDemo == demo) {
       if (demo.isValid && demo.world.deinit) {
          try {

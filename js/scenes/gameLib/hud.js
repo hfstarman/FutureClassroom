@@ -20,6 +20,10 @@ export const getHUD = () => {
     return gameHUD;
 }
 
+export const removeHUD = () => {
+  gameHUD = null;
+}
+
 export const showHUD = () => {
   getHUD().displayHUD();
 }
