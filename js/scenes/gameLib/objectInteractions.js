@@ -163,7 +163,7 @@ export const releaseGrab = (hand) => {
  * it if there is an object selected by given hand.
  * @param {string} hand 'left' or 'right'
  */
-export const tryAlyxGrab = (hand) => {
+export const tryAlyxGrab2 = (hand) => {
     const obj = selectedObjects[hand];
     if (obj === null) return;
     removeSelected(hand);
@@ -180,6 +180,18 @@ export const tryAlyxGrab = (hand) => {
     console.log("solution:")
     console.log(sol)
     if (sol.length > 0) obj.setVelocity(sol[1]);
+}
+
+export const tryAlyxGrab = (hand) => {
+  const obj = selectedObjects[hand];
+  console.log(obj);
+  if (obj === null) return;
+  removeSelected(hand);
+  // const objPos = cg.getPos(obj.getMatrix());
+  const ctrlrPos = cg.getPos(getCtrlrMatrix(hand));
+  obj.setMatrix(cg.mTranslate(ctrlrPos));
+
+  obj.setVelocity([0, obj.gravity/2, 0]);
 }
 
 // Can optimize by only resetting colors of objects that were changed

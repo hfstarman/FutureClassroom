@@ -15,6 +15,9 @@ import {
 import { debugLog } from "./debug.js";
 
 export const handleControllerActions = () => {
+  updateButtonInfo();
+  Wrists.updatePos();
+
   let hitL = getTargetedObject("left");
   let hitR = getTargetedObject("right");
 
@@ -38,8 +41,8 @@ export const handleControllerActions = () => {
 
   if (buttonWentDown("B")) debugLog();
 
-  if (buttonWentDown("A")) tryAlyxGrab("right");
-  if (buttonWentDown("X")) tryAlyxGrab("left");
+  if (Wrists.didFlick("right")) tryAlyxGrab("right");
+  if (Wrists.didFlick("left")) tryAlyxGrab("left");
 
   // grabbing objects
   if (buttonWentDown("trigger2R")) tryGrab("right");
@@ -76,23 +79,31 @@ let init = false;
   
   buttonInfo = {
 
-    "triggerL" : { hand: "left",  button: 0, pressed: false },
-    "trigger2L": { hand: "left",  button: 1, pressed: false },
-    "joyBtnL"  : { hand: "left",  button: 3, pressed: false },
-    "X"        : { hand: "left",  button: 4, pressed: false },
-    "Y"        : { hand: "left",  button: 5, pressed: false },
+    "triggerL" : { hand: "left",  button: 0, pressed: false, prevPressed: false },
+    "trigger2L": { hand: "left",  button: 1, pressed: false, prevPressed: false },
+    "joyBtnL"  : { hand: "left",  button: 3, pressed: false, prevPressed: false },
+    "X"        : { hand: "left",  button: 4, pressed: false, prevPressed: false },
+    "Y"        : { hand: "left",  button: 5, pressed: false, prevPressed: false },
   
-    "triggerR" : { hand: "right", button: 0, pressed: false },
-    "trigger2R": { hand: "right", button: 1, pressed: false },
-    "btnJoyR"  : { hand: "right", button: 3, pressed: false },
-    "A":         { hand: "right", button: 4, pressed: false },
-    "B":         { hand: "right", button: 5, pressed: false },
+    "triggerR" : { hand: "right", button: 0, pressed: false, prevPressed: false },
+    "trigger2R": { hand: "right", button: 1, pressed: false, prevPressed: false },
+    "btnJoyR"  : { hand: "right", button: 3, pressed: false, prevPressed: false },
+    "A":         { hand: "right", button: 4, pressed: false, prevPressed: false },
+    "B":         { hand: "right", button: 5, pressed: false, prevPressed: false },
   
   }
 
 })();
 
-// let prevButtonState = JSON.parse(JSON.stringify(buttonState));
+const getButtonState = (info) => buttonState[info.hand][info.button];
+
+const updateButtonInfo = () => {
+  for (let key in buttonInfo) {
+    let info = buttonInfo[key];
+    info.prevPressed = info.pressed;
+    info.pressed = getButtonState(info).pressed;
+  }
+}
 
 /**
  * @param {string} button The name of the button
@@ -100,16 +111,7 @@ let init = false;
  */
 export const buttonWentDown = (button) => {
   const info = buttonInfo[button];
-
-  const prevPressed = info.pressed;
-  const currPressed = buttonState[info.hand][info.button].pressed;
-  let result = !prevPressed && currPressed;
-  // if (button == "triggerR")
-    // console.log(`BUTTON STATE: ${currPressed}, PREV: ${prevPressed}, result: ${result}`);
-
-  if (result) info.pressed = currPressed;
-
-  return result;
+  return info.pressed && !info.prevPressed;
 }
 
 /**
@@ -118,15 +120,7 @@ export const buttonWentDown = (button) => {
  */
 export const buttonWentUp = (button) => {
   const info = buttonInfo[button];
-
-  const prevPressed = info.pressed;
-  const currPressed = buttonState[info.hand][info.button].pressed;
-  let result = prevPressed && !currPressed;
-  // console.log(`BUTTON STATE: ${currPressed}, PREV: ${prevPressed}, result: ${result}`);
-
-  if (result) info.pressed = currPressed;
-
-  return result;
+  return !info.pressed && info.prevPressed;
 }
 
 /**
@@ -136,6 +130,36 @@ export const buttonWentUp = (button) => {
 export const buttonIsPressed = (button) => {
   const info = buttonInfo[button];
   return buttonState[info.hand][info.button].pressed;
+}
+
+class Wrists {
+  static positions = {
+    "left": {
+      prev: cg.vZero(),
+      curr: cg.vZero(),
+    },
+    "right": {
+      prev: cg.vZero(),
+      curr: cg.vZero(),
+    }
+  }
+
+  static flickThreshold = 0.05;
+
+  static updatePos() {
+    let posL = Wrists.positions.left;
+    let posR = Wrists.positions.right;
+    posL.prev = posL.curr.slice();
+    posR.prev = posR.curr.slice();
+    posL.curr = cg.getPos(getCtrlrMatrix("left"));
+    posR.curr = cg.getPos(getCtrlrMatrix("right"));
+  }
+
+  static didFlick(hand) {
+    let pos = Wrists.positions[hand];
+    let sqDist = cg.vSqDistance(pos.curr, pos.prev);
+    return sqDist > Wrists.flickThreshold * Wrists.flickThreshold;
+  }
 }
 
 /**

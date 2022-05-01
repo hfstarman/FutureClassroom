@@ -28,16 +28,11 @@ export const handleCollisions = () => {
   if (closestEnemyHit !== null) {
     closestEnemyHit.death();
     getHUD().increaseScore(100);
-    murderWeapon.resetVelocity();
-    // murderWeapon.selectedBy = "right"; //! DEBUGGING
-    // set obj velocity to zero
-    // set enemy state to dead
-    // trigger enemy death animation
-    // remove enemy from enemies
-  // } else {
-  //   // ! DEBUGGING, REMOVE THIS
-  //   const knife = physicsObjects["2"];
-  //   knife.selectedBy = null;
+    if (murderWeapon.state === "free") {
+      murderWeapon.resetVelocity();
+    } else { // break the weapon if it is being held
+      murderWeapon.delete();
+    }
   }
 }
 
