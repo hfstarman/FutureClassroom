@@ -25,4 +25,6 @@ export default {
     orangeish:  [1,0.5,0.25],
     redish:     [1,0.25,0],
     brownish:   [0.5,0.25,0.25],
+    lavender:   [0.75,0.5,0.75],
+    darkRed:    [0.5,0,0],
 }

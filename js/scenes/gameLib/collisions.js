@@ -5,6 +5,11 @@ import { physicsObjects } from "./objects.js";
 import { getHUD } from "./hud.js";
 
 export const handleCollisions = () => {
+  handleDeadlyObjects();
+  handlePowerUps();
+}
+
+const handleDeadlyObjects = () => {
   const movingObjects = Object.values(physicsObjects).filter(
     () => true //obj => obj.state === "free" && isMoving(obj)
   );
@@ -26,12 +31,25 @@ export const handleCollisions = () => {
   }
 
   if (closestEnemyHit !== null) {
+    getHUD().increaseScore(closestEnemyHit.scoreValue);
     closestEnemyHit.death();
-    getHUD().increaseScore(100);
     if (murderWeapon.state === "free") {
       murderWeapon.resetVelocity();
     } else { // break the weapon if it is being held
       murderWeapon.delete();
+    }
+  }
+}
+
+const handlePowerUps = () => {
+  const activateDistance = 0.2;
+  const powerUps = Object.values(physicsObjects).filter(obj => obj.entityType === "powerUp");
+  for (let powerUp of powerUps) {
+    const playerPos = cg.getPos(powerUp.model.viewMatrix());
+    const powerUpPos = cg.getPos(powerUp.entity.getGlobalMatrix());
+    let sqDist = cg.vSqDistance(playerPos, powerUpPos);
+    if (sqDist < activateDistance * activateDistance) {
+      powerUp.activate();
     }
   }
 }

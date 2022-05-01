@@ -31,6 +31,7 @@ class Enemy extends BaseClass {
     // this.spawnTime = spawnTime;
     this.damage = 1;
     this.strideAngle = Math.PI/12;
+    this.scoreValue = 100;
 
     this.id = enemyId++;
     enemies[this.id] = this;

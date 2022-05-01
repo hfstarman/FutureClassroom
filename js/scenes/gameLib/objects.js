@@ -2,6 +2,7 @@
 import { BaseClass } from "./baseClass.js";
 import * as cg from "../../render/core/cg.js";
 import c from "./colors.js";
+import { getHUD } from "./hud.js";
 /*
    Object Model
    ------------
@@ -53,6 +54,8 @@ export class GameObject extends BaseClass {
     this.selectColor = c.redish;
 
     this.throwVelocities = [];
+    
+    this.extraHeight = 0;
 
     this.entityType = "GameObject";
     this.id = objectID++;
@@ -139,6 +142,58 @@ export class Knife extends GameObject {
       ]
     };
   
+  }
+}
+
+class PowerUp extends GameObject {
+  constructor(model, initPosition) {
+    super(model, initPosition);
+    this.entityType = "powerUp";
+    this.powerUpType = "";
+    this.extraHeight = .1;
+
+    this.entity.add("cube")
+    this.entity.add("cube")
+    this.entity.add("cube")
+  }
+
+  animate() {
+    const cubes = this.entity._children;
+    cubes[0].identity().scale(0.1, 0.1, 0.1)
+    .turnX(3 * this.model.time).turnZ(this.model.time/2);
+    cubes[1].identity().scale(0.1, 0.1, 0.1)
+    .turnZ(3 * this.model.time).turnY(this.model.time/2);
+    cubes[2].identity().scale(0.1, 0.1, 0.1)
+    .turnY(3 * this.model.time).turnZ(this.model.time/2);
+  }
+
+  activate() {
+    this.delete();
+  }
+}
+
+export class HealthPickup extends PowerUp {
+  constructor(model, initPosition) {
+    super(model, initPosition);
+    this.powerUpType = "health";
+    this.defaultColor = c.red;
+    this.hoverColor = c.pinkish;
+    this.selectColor = c.darkRed;
+  }
+
+  activate() {
+    super.activate();
+    getHUD().increaseHealth(5);
+  }
+}
+
+export class InfinitePower extends PowerUp {
+  constructor(model, initPosition) {
+    super(model, initPosition);
+    this.powerUpType = "Infinite Throw";
+    this.defaultColor = c.purple;
+    this.hoverColor = c.lavender;
+    this.selectColor = c.violet;
   }
 }
 

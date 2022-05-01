@@ -67,6 +67,14 @@ const didIntersect = (beam, obj) => {
   ), false);
 }
 
+export const animateObjects = () => {
+  for (let obj of Object.values(physicsObjects)) {
+    if (obj.animate !== undefined) {
+      obj.animate();
+    }
+  }
+}
+
 export const handleObjectMovement = () => {
   for (let obj of Object.values(physicsObjects)) {
     switch (obj.state) {
@@ -103,7 +111,7 @@ const handleStoredObject = (obj) => {
 
 const applyPhysicsToObject = (obj) => {
   // apply gravity, friction, and restitution
-  if (getLowestY(obj.entity) + obj.getDeltaPos()[1] <= .7366) { // .7366 meters because I want it to be on the table (29 inches)
+  if (getLowestY(obj.entity) + obj.getDeltaPos()[1] - obj.extraHeight <= .7366) { // .7366 meters because I want it to be on the table (29 inches)
     obj.accelerantEvent("bounce");
     obj.accelerantEvent("friction");
   } else {
@@ -184,7 +192,6 @@ export const tryAlyxGrab2 = (hand) => {
 
 export const tryAlyxGrab = (hand) => {
   const obj = selectedObjects[hand];
-  console.log(obj);
   if (obj === null) return;
   removeSelected(hand);
   // const objPos = cg.getPos(obj.getMatrix());

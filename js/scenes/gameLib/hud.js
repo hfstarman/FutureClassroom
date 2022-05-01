@@ -31,6 +31,7 @@ class HUD {
     this.wave = 0;
     this.health = 10;
     this.isGameOver = false;
+    this.activePowerUp = "None";
 
     this.hudLabels = [
       {
@@ -48,6 +49,11 @@ class HUD {
         field: "health",
         pos: [1, -1, 0],
       },
+      {
+        text: "Power Up: ??",
+        field: "activePowerUp",
+        pos: [0, -1.3, 0],
+      }
     ];
 
     this.hudLabels.forEach(l => this.hud.add('label').move(l.pos).scale(.1));
