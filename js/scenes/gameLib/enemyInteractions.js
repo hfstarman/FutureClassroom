@@ -10,7 +10,6 @@ export const handleEnemyMovement = () => {
       gravityEvent(enemy);
     } else {
       // moveTowardsPlayer(enemy);
-      // walkingAnimation(enemy);
     }
     turnTowardsPlayer(enemy);
     enemy.applyVelocity();
@@ -27,6 +26,27 @@ const gravityEvent = (enemy) => {
     const newVelocity = dropY(enemy.velocity);
     enemy.setVelocity(newVelocity);
   }
+}
+
+const moveTowardsPlayer = (enemy) => {
+  const playerMatrix = enemy.model.viewMatrix(0);
+  const playerPosXZ = dropY(cg.getPos(playerMatrix));
+  const enemyPosXZ = dropY(enemy.getPos());
+  const prevSpeedXZ = getSpeedXZ(enemy);
+
+  // have enemy travel towards player at some increasing speed to a max speed
+  const directionXZ = cg.normalize(cg.vsub(playerPosXZ, enemyPosXZ));
+  const newSpeedXZ = Math.min(prevSpeedXZ + (enemy.acceleration * enemy.model.deltaTime), enemy.maxSpeed);
+
+  const newVelocity = cg.scale(directionXZ, newSpeedXZ);
+
+  // Should not change the Y componement of velocity. 
+  // Y is handled by gravity. 
+  // This function only handles X and Z
+  newVelocity[1] = enemy.velocity[1];
+  enemy.setVelocity(newVelocity);
+
+  walkingAnimation(enemy);
 }
 
 const walkingAnimation = (enemy) => {
@@ -57,25 +77,6 @@ const walkingAnimation = (enemy) => {
   const jointRPos = cg.getPos(enemy.legJointR.getMatrix());
   enemy.legJointL.identity().move(jointLPos).turnX(radians);
   enemy.legJointR.identity().move(jointRPos).turnX(-radians);
-}
-
-const moveTowardsPlayer = (enemy) => {
-  const playerMatrix = enemy.model.viewMatrix(0);
-  const playerPosXZ = dropY(cg.getPos(playerMatrix));
-  const enemyPosXZ = dropY(enemy.getPos());
-  const prevSpeedXZ = getSpeedXZ(enemy);
-
-  // have enemy travel towards player at some increasing speed to a max speed
-  const directionXZ = cg.normalize(cg.vsub(playerPosXZ, enemyPosXZ));
-  const newSpeedXZ = Math.min(prevSpeedXZ + (enemy.acceleration * enemy.model.deltaTime), enemy.maxSpeed);
-
-  const newVelocity = cg.scale(directionXZ, newSpeedXZ);
-
-  // Should not change the Y componement of velocity. 
-  // Y is handled by gravity. 
-  // This function only handles X and Z
-  newVelocity[1] = enemy.velocity[1];
-  enemy.setVelocity(newVelocity);
 }
 
 const getSpeedXZ = (enemy) => {

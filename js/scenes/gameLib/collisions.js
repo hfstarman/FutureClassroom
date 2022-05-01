@@ -2,6 +2,7 @@
 import * as cg from "../../render/core/cg.js";
 import { enemies } from "./enemies.js";
 import { physicsObjects } from "./objects.js";
+import { getHUD } from "./hud.js";
 
 export const handleCollisions = () => {
   const movingObjects = Object.values(physicsObjects).filter(
@@ -26,16 +27,12 @@ export const handleCollisions = () => {
 
   if (closestEnemyHit !== null) {
     closestEnemyHit.death();
-    murderWeapon.resetVelocity();
-    murderWeapon.selectedBy = "right"; //! DEBUGGING
-    // set obj velocity to zero
-    // set enemy state to dead
-    // trigger enemy death animation
-    // remove enemy from enemies
-  } else {
-    // ! DEBUGGING, REMOVE THIS
-    const knife = physicsObjects["2"];
-    knife.selectedBy = null;
+    getHUD().increaseScore(100);
+    if (murderWeapon.state === "free") {
+      murderWeapon.resetVelocity();
+    } else { // break the weapon if it is being held
+      murderWeapon.delete();
+    }
   }
 }
 

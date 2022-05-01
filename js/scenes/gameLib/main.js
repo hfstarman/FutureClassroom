@@ -5,18 +5,21 @@ import { handleObjectMovement, setObjectColors} from "./objectInteractions.js";
 import { handleCollisions } from "./collisions.js";
 import { createHUD, showHUD, getHUD } from "./hud.js";
 import { handleEnemyAttack } from "./enemyAttack.js";
+import { WaveMaker } from "./waveMaker.js";
 
-export function initGame(model) {
+export function initGame(model, waveSpawns) {
   createHUD(model);
+  WaveMaker.init(model, waveSpawns);
 }
 
 export function runGame() {
   showHUD();
   if (getHUD().isGameOver) return;
-  
+
   setObjectColors();
   handleCollisions();
   handleEnemyAttack();
+  WaveMaker.makeWaves();
   handleEnemyMovement();
   handleObjectMovement();
   handleControllerActions();

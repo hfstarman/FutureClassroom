@@ -32,6 +32,8 @@ export const state = {
 
 // object base class
 export class GameObject extends BaseClass {
+  static throwSmoothingSize = 3;
+
   constructor(model,  initPosition) {
     super(model, initPosition);
 
@@ -50,6 +52,8 @@ export class GameObject extends BaseClass {
     this.hoverColor = c.orange;
     this.selectColor = c.redish;
 
+    this.throwVelocities = [];
+
     this.entityType = "GameObject";
     this.id = objectID++;
     physicsObjects[this.id] = this;
@@ -58,6 +62,25 @@ export class GameObject extends BaseClass {
   delete() {
     removePhysicsObject(this);
     super.delete();
+  }
+
+  appendThrowVelocity(velocity) {
+    this.throwVelocities.push(velocity);
+    if (this.throwVelocities.length > GameObject.throwSmoothingSize) {
+      this.throwVelocities.shift();
+    }
+  }
+
+  smoothThrow() {
+    const totalVelocities = this.throwVelocities.reduce(
+      (acc, curr) => cg.vadd(acc, curr)
+    , cg.vZero());
+    const smoothThrowVelocity = cg.scale(totalVelocities, 1/this.throwVelocities.length);
+    this.setVelocity(smoothThrowVelocity);
+  }
+
+  resetThrowVelocities() {
+    this.throwVelocities = [];
   }
 
   /**
