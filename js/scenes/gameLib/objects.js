@@ -165,14 +165,15 @@ class PowerUp extends GameObject {
   animate() {
     const cubes = this.entity._children;
     cubes[0].identity().scale(0.1, 0.1, 0.1)
-    .turnX(3 * this.model.time).turnZ(this.model.time/2);
+    .turnX(2 * this.model.time).turnZ(2 * this.model.time);
     cubes[1].identity().scale(0.1, 0.1, 0.1)
-    .turnZ(3 * this.model.time).turnY(this.model.time/2);
+    .turnZ(2 * this.model.time).turnY(2 * this.model.time);
     cubes[2].identity().scale(0.1, 0.1, 0.1)
-    .turnY(3 * this.model.time).turnZ(this.model.time/2);
+    .turnY(2 * this.model.time).turnZ(2 * this.model.time);
   }
 
   activate() {
+    // TODO play sound
     this.delete();
   }
 }

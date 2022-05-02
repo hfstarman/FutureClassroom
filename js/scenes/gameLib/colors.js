@@ -27,4 +27,6 @@ export default {
     brownish:   [0.5,0.25,0.25],
     lavender:   [0.75,0.5,0.75],
     darkRed:    [0.5,0,0],
+    zombieGreen: [105/256, 131/256, 98/256],
+    darkZombieGreen: [71/256, 95/256, 67/256],
 }

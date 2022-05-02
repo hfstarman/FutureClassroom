@@ -31,12 +31,17 @@ const handleDeadlyObjects = () => {
   }
 
   if (closestEnemyHit !== null) {
-    getHUD().increaseScore(closestEnemyHit.scoreValue);
-    closestEnemyHit.death();
-    if (murderWeapon.state === "free") {
-      murderWeapon.resetVelocity();
-    } else { // break the weapon if it is being held
+    if (closestEnemyHit.hasArmor) {
       murderWeapon.delete();
+      closestEnemyHit.removeArmor();
+    } else {
+      getHUD().increaseScore(closestEnemyHit.scoreValue);
+      closestEnemyHit.death();
+      if (murderWeapon.state === "free") {
+        murderWeapon.resetVelocity();
+      } else { // break the weapon if it is being held
+        murderWeapon.delete();
+      }
     }
   }
 }
