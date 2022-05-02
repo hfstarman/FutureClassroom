@@ -43,6 +43,7 @@ class Enemy extends BaseClass {
   }
 
   death() {
+    // TODO play death sound
     this.state = "dead";
     this.delete();
   }
@@ -76,39 +77,29 @@ export class Zombie extends Enemy {
     const scale = .02;
 
     this.torso      = this.entity.add("cube")
-                          .color(c.blue)
                           .move(0, 0, 0)
                           .scale(8, 10, 4) // proportions, scaled down later
-    this.zAxis      = this.entity.add("cube")
-                          .color(c.pink)
-                          .move(0, 0, 10)
-                          .scale(1, 1, 10)
     this.head       = this.entity.add("cube")
-                          .color(c.red)
                           .move(0, 9*2, 0)
                           .scale(8, 8, 8) 
     this.armJointL  = this.entity.add()
                           .move(6*2, 3*2, 0)
     this.armL       = this.armJointL.add("cube")
-                          .color(c.green)
                           .move(0, -7, 0)
                           .scale(4, 11, 4)
     this.armJointR  = this.entity.add()
                           .move(-6*2, 3*2, 0)
     this.armR       = this.armJointR.add("cube")
-                          .color(c.purple)
                           .move(0, -7, 0)
                           .scale(4, 11, 4)
     this.legJointL  = this.entity.add()
                           .move(4, -10, 0)
     this.legL       = this.legJointL.add("cube")
-                          .color(c.orange)
                           .move(0, -15, 0)
                           .scale(3.99, 15, 3.99)
     this.legJointR  = this.entity.add()
                           .move(-4, -10, 0)
     this.legR       = this.legJointR.add("cube")
-                          .color(c.yellow)
                           .move(0, -15, 0)
                           .scale(3.99, 15, 3.99)
     this.foot       = this.legR.add();
@@ -134,6 +125,39 @@ export class Zombie extends Enemy {
         {posOffset: [0, -(getSize(this.torso, "Y") * 3), 0], radius: getSize(this.torso, "Y") * .8},
       ],
     }
+    this.entity.color(c.zombieGreen);
+  }
+}
+
+export class FastZombie extends Zombie {
+  constructor(model, initPosition) {
+    super(model, initPosition);
+    this.entity.color(c.darkRed);
+
+    this.acceleration = 0.8;
+    this.maxSpeed = 1.0;
+
+    this.scoreValue = 175;
+  }
+}
+
+export class ArmoredZombie extends Zombie {
+  constructor(model, initPosition) {
+    super(model, initPosition);
+    this.entity.color(c.lightGray);
+
+    this.unarmoredColor = c.darkZombieGreen;
+    this.hasArmor = true;
+    this.damage = 3;
+    this.maxSpeed = 0.4;
+
+    this.scoreValue = 250;
+  }
+
+  removeArmor() {
+    // TODO play armor break sound
+    this.hasArmor = false;
+    this.entity.color(this.unarmoredColor);
   }
 }
 

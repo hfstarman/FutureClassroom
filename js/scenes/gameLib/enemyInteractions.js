@@ -9,7 +9,7 @@ export const handleEnemyMovement = () => {
     if (!enemy.grounded) {
       gravityEvent(enemy);
     } else {
-      // moveTowardsPlayer(enemy);
+      moveTowardsPlayer(enemy);
     }
     turnTowardsPlayer(enemy);
     enemy.applyVelocity();

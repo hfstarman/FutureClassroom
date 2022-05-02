@@ -1,6 +1,6 @@
 // @ts-check
-import { Zombie } from './enemies.js';
-import { Cube, Knife } from './objects.js';
+import { Zombie, FastZombie, ArmoredZombie } from './enemies.js';
+import { Cube, Knife, InfinitePower, HealthPickup } from './objects.js';
 import { getHUD } from './hud.js';
 import { enemies } from './enemies.js';
 
@@ -115,11 +115,16 @@ class WaveSpawner {
   spawn(entityType, position) {
     const entityClasses = {
       zombie: Zombie,
+      fastzombie: FastZombie,
+      armoredzombie: ArmoredZombie,
       cube: Cube,
-      knife: Knife
+      knife: Knife,
+      infinitethrow: InfinitePower,
+      healthpickup: HealthPickup,
     }
 
-    new entityClasses[entityType](this.model, position);
+    const entityTypeCleaned = entityType.replace(/\s/g, '').toLowerCase();
+    new entityClasses[entityTypeCleaned](this.model, position);
   }
 
 }

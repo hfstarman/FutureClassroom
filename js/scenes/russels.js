@@ -7,24 +7,25 @@ import { initGame, runGame } from "./gameLib/main.js";
 
 export const init = async model => {
 
-   const health = new HealthPickup(model, [0, 1.5, 0]);
-   const inf = new InfinitePower(model, [-0.4, 1.5, 0]);
+   // const health = new HealthPickup(model, [0, 1.5, 0]);
+   // const inf = new InfinitePower(model, [-0.4, 1.5, 0]);
 
    const spawns = {
       1: {
          objects: [
-            createSpawn("cube", 0, [-.4, 1.5, -.5]),
-            createSpawn("cube", 2, [.4, 1.5, -.5]),
-            createSpawn("knife", 4, [0, 1.5, -.5]),
+            createSpawn("HealthPickup", 0, [-.4, 1.5, -.5]),
+            createSpawn("InfiniteThrow", 1, [.4, 1.5, -.5]),
+            createSpawn("Knife", 2, [0, 1.5, -.5]),
          ],
          enemies: [
-            createSpawn("zombie", 8, [-1, 1.5, -1]),
+            createSpawn("Zombie", 4, [-1, 1.5, -1]),
          ]
       },
       2: {
          objects: [],
          enemies: [
-            createSpawn("zombie", 8, [-3, 1.5, -1]),
+            createSpawn("FastZombie", 4, [.5, 1.5, -4]),
+            createSpawn("ArmoredZombie", 4, [-.5, 1.5, -4]),
          ]
       }
    }
