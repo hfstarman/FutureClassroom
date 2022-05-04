@@ -4,13 +4,16 @@ import { Gltf2Node } from "../render/nodes/gltf2.js";
 export default () => {
 
    global.scene().addNode(new Gltf2Node({
-      url: "./media/gltf/dungeon/dungeon.gltf"
+      url: "./media/gltf/dungeon-large/dungeon-large.gltf"
    }));
 
    return {
       enableSceneReloading: true,
       scenes: [
-         { name: "DemoRussels", path: "./russels.js" },
+         { name: "Game Demo", path: "./levelDemo.js" },
+         { name: "Level 1", path: "./level1.js" },
+         { name: "Level 2", path: "./level2.js" },
+         { name: "Level 3", path: "./level3.js" },
          // { name: "Demo4D"        , path: "./demo4D.js"        },
          // { name: "DemoBlobs"     , path: "./demoBlobs.js"     },
          // { name: "DemoCube"      , path: "./demoCube.js"      },

@@ -34,10 +34,11 @@ class HUD {
     this.hud = model.add();
     this.score = 0;
     this.wave = 0;
-    this.health = 10;
+    this.health = 5;
     this.isGameOver = false;
     this.activePowerUp = "None";
     this.powerUpEndTime = 0;
+    this.isDemo = false;
 
     this.hudLabels = [
       {
@@ -72,8 +73,8 @@ class HUD {
 
   checkPowerExpiration() {
     if (this.model.time > this.powerUpEndTime) {
-      if (this.activePowerUp === "Infinite Throw")
-        removeTemporaryObjects();
+      // if (this.activePowerUp === "Infinite Throw")
+      //   removeTemporaryObjects();
       this.activePowerUp = "None";
     }
   }
@@ -114,6 +115,10 @@ class HUD {
     this.hud.setMatrix(this.model.viewMatrix()).move(0,0,-1).turnY(Math.PI).scale(.1);
   }
 
+  isGameDone() {
+    return this.isGameOver || WaveMaker.wonGame();
+  }
+
   increaseHealth(amount) {
     this.health += amount;
   }
@@ -129,6 +134,11 @@ class HUD {
 
   incrementWave() {
     return ++this.wave;
+  }
+
+  setDemo(isDemo) {
+    if (typeof isDemo === "boolean")
+      this.isDemo = isDemo;
   }
 
 }

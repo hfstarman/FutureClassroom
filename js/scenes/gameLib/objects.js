@@ -25,6 +25,12 @@ export const removePhysicsObject = (gameObject) => {
   delete physicsObjects["" + gameObject.id];
 }
 
+const deleteObject = (objectId) => {
+  const object = physicsObjects[objectId];
+  object.delete();
+  removePhysicsObject(object);
+}
+
 export const state = {
     held: "held",
     stored: "stored",
@@ -33,7 +39,7 @@ export const state = {
 
 // object base class
 export class GameObject extends BaseClass {
-  static throwSmoothingSize = 3;
+  static throwSmoothingSize = 6;
 
   constructor(model,  initPosition) {
     super(model, initPosition);
@@ -79,6 +85,8 @@ export class GameObject extends BaseClass {
       (acc, curr) => cg.vadd(acc, curr)
     , cg.vZero());
     const smoothThrowVelocity = cg.scale(totalVelocities, 1/this.throwVelocities.length);
+    smoothThrowVelocity[0] *= 1.5; // want the object to move faster
+    smoothThrowVelocity[3] *= 1.5;
     this.setVelocity(smoothThrowVelocity);
   }
 
@@ -136,6 +144,10 @@ export class Knife extends GameObject {
     this.blade      = this.entity.add("cube")
                           .move(0, 0.11, 0)
                           .scale(0.03, 0.10, 0.008);
+    // this.selectBox  = this.entity.add("cube")
+    //                       .move(0, .07, 0)
+    //                       .scale(0.12, 0.12, 0.12)
+    //                       .texture("media/textures/transparent.png");
 
     this.hitboxes = {
       blade: [
@@ -147,6 +159,8 @@ export class Knife extends GameObject {
 
   makeTemporary() {
     this.fromInfiniteThrow = true;
+    const id = this.id;
+    setTimeout(() => deleteObject(id), 5000);
   }
 }
 
@@ -156,6 +170,8 @@ class PowerUp extends GameObject {
     this.entityType = "powerUp";
     this.powerUpType = "";
     this.extraHeight = .1;
+
+    this.restitution = 1;
 
     this.entity.add("cube")
     this.entity.add("cube")
@@ -188,8 +204,8 @@ export class HealthPickup extends PowerUp {
   }
 
   activate() {
-    super.activate();
     getHUD().increaseHealth(5);
+    super.activate();
   }
 }
 
@@ -203,8 +219,8 @@ export class InfinitePower extends PowerUp {
   }
 
   activate() {
-    super.activate();
     getHUD().setPower(this.powerUpType, 10);
+    super.activate();
   }
 }
 

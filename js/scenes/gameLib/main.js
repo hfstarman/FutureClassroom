@@ -7,15 +7,17 @@ import { createHUD, showHUD, getHUD } from "./hud.js";
 import { handleEnemyAttack } from "./enemyAttack.js";
 import { WaveMaker } from "./waveMaker.js";
 
-export function initGame(model, waveSpawns) {
+export function initGame(model, waveSpawns, isDemo) {
   console.log("init game");
+  model.setTable(false);
   createHUD(model);
+  getHUD().setDemo(isDemo);
   WaveMaker.init(model, waveSpawns);
 }
 
 export function runGame() {
   showHUD();
-  if (getHUD().isGameOver) return;
+  if (getHUD().isGameDone()) return;
 
   animateObjects();
   setObjectColors();
