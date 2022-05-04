@@ -19,6 +19,6 @@ export const init = async model => {
       },
    }
 
-   initGame(model, spawns, true);
+   initGame(model, spawns, "demo");
    model.animate(runGame);
 }

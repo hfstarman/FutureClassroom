@@ -119,7 +119,7 @@ const addDemoButtons = demoNames => {
          header.innerHTML += '<button onclick=chooseFlag("' + names[n] + '");'
                  + 'window.syncDemos();>' + names[n] + '</button>';
          clay.vrWidgets.add('label').info(names[n])
-	                            .move(1,1.7-n*.1,.7)
+	                            .move(1,3-n*.1,.7)
 	                            .turnY(Math.PI/6)
 				    .scale(.045);
       }

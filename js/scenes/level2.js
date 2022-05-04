@@ -33,16 +33,52 @@ export const init = async model => {
         ],
       },
       3: {
-        objects: [],
-        enemies: [],
+        objects: [
+          createSpawn("Knife", 0, [-.6, 1.5, -.5]),
+          createSpawn("Knife", 0, [.6, 1.5, -.5]),
+          createSpawn("Knife", 7, [-.6, 1.5, -.5]),
+          createSpawn("Knife", 7, [.6, 1.5, -.5]),
+          createSpawn("InfiniteThrow", 12, [0, 2, 4]),
+        ],
+        enemies: [
+          createSpawn("ArmoredZombie", 1, [-1.25, 1.5, 3.5]),
+          createSpawn("ArmoredZombie", 1, [1.25, 1.5, 3.5]),
+          createSpawn("Zombie", 5, [0, 1.5, 4]),
+          createSpawn("Zombie", 8, [1.5, 1.5, 3]),
+          createSpawn("Zombie", 8, [-1.5, 1.5, 3]),
+          createSpawn("Zombie", 11, [3, 1.5, 2]),
+          createSpawn("Zombie", 11, [-3, 1.5, 2]),
+          createSpawn("Zombie", 14, [4.5, 1.5, 1]),
+          createSpawn("Zombie", 14, [-4.5, 1.5, 1]),
+        ],
       },
       4: {
-        objects: [],
+        objects: [
+          createSpawn("HealthPickup", 0, [0, 1.5, 0]),
+          createSpawn("Knife", 5, [.6, 1.5, -.5]),
+          createSpawn("Knife", 5, [0, 1.5, -.5]),
+          createSpawn("Knife", 5, [-.6, 1.5, -.5]),
+        ],
         enemies: [],
       },
       5: {
-        objects: [],
-        enemies: [],
+        objects: [
+          createSpawn("InfiniteThrow", 20, [0, 1.5, 0]),
+        ],
+        enemies: [
+          createSpawn("FastZombie", 1, [1.5, 1.5, 4]),
+          createSpawn("FastZombie", 1, [-1.5, 1.5, 4]),
+          createSpawn("FastZombie", 1, [3, 1.5, 4]),
+          createSpawn("FastZombie", 1, [-3, 1.5, 4]),
+          createSpawn("Zombie", 5, [1.5, 1.5, 4]),
+          createSpawn("Zombie", 5, [-1.5, 1.5, 4]),
+          createSpawn("Zombie", 5, [3, 1.5, 4]),
+          createSpawn("Zombie", 5, [-3, 1.5, 4]),
+          createSpawn("ArmoredZombie", 10, [1.5, 1.5, 4]),
+          createSpawn("ArmoredZombie", 10, [-1.5, 1.5, 4]),
+          createSpawn("ArmoredZombie", 10, [3, 1.5, 4]),
+          createSpawn("ArmoredZombie", 10, [-3, 1.5, 4]),
+        ],
       },
    }
 

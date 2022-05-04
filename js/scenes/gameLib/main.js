@@ -7,11 +7,11 @@ import { createHUD, showHUD, getHUD } from "./hud.js";
 import { handleEnemyAttack } from "./enemyAttack.js";
 import { WaveMaker } from "./waveMaker.js";
 
-export function initGame(model, waveSpawns, isDemo) {
+export function initGame(model, waveSpawns, modifier) {
   console.log("init game");
   model.setTable(false);
   createHUD(model);
-  getHUD().setDemo(isDemo);
+  getHUD().setModifier(modifier);
   WaveMaker.init(model, waveSpawns);
 }
 

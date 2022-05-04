@@ -44,10 +44,7 @@ export const handleControllerActions = () => {
   if (Wrists.didFlick("left")) tryAlyxGrab("left");
 
   if (buttonWentDown("trigger2R")) tryGrab("right");
-  if (buttonWentDown("trigger2L")) {
-    console.log("try grab left")
-    tryGrab("left");
-  } 
+  if (buttonWentDown("trigger2L")) tryGrab("left");
   if (buttonWentUp("trigger2R")) releaseGrab("right");
   if (buttonWentUp("trigger2L")) releaseGrab("left");
 

@@ -123,8 +123,14 @@ class WaveSpawner {
       healthpickup: HealthPickup,
     }
 
-    const entityTypeCleaned = entityType.replace(/\s/g, '').toLowerCase();
-    new entityClasses[entityTypeCleaned](this.model, position);
+    if (entityType === "ForeverInfiniteThrow") {
+      const infPower = new InfinitePower(this.model, [0, 15, 0]);
+      infPower.duration = 1000000;
+      infPower.activate();
+    } else {      
+      const entityTypeCleaned = entityType.replace(/\s/g, '').toLowerCase();
+      new entityClasses[entityTypeCleaned](this.model, position);
+    }
   }
 
 }

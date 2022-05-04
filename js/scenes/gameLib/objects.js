@@ -27,8 +27,8 @@ export const removePhysicsObject = (gameObject) => {
 
 const deleteObject = (objectId) => {
   const object = physicsObjects[objectId];
-  object.delete();
-  removePhysicsObject(object);
+  if (object !== undefined)
+    object.delete();
 }
 
 export const state = {
@@ -39,7 +39,7 @@ export const state = {
 
 // object base class
 export class GameObject extends BaseClass {
-  static throwSmoothingSize = 6;
+  static throwSmoothingSize = 3;
 
   constructor(model,  initPosition) {
     super(model, initPosition);
@@ -147,7 +147,7 @@ export class Knife extends GameObject {
     // this.selectBox  = this.entity.add("cube")
     //                       .move(0, .07, 0)
     //                       .scale(0.12, 0.12, 0.12)
-    //                       .texture("media/textures/transparent.png");
+    //                       .opacity(.25);
 
     this.hitboxes = {
       blade: [
@@ -216,10 +216,11 @@ export class InfinitePower extends PowerUp {
     this.defaultColor = c.purple;
     this.hoverColor = c.lavender;
     this.selectColor = c.violet;
+    this.duration = 10;
   }
 
   activate() {
-    getHUD().setPower(this.powerUpType, 10);
+    getHUD().setPower(this.powerUpType, this.duration);
     super.activate();
   }
 }

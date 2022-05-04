@@ -38,7 +38,7 @@ class HUD {
     this.isGameOver = false;
     this.activePowerUp = "None";
     this.powerUpEndTime = 0;
-    this.isDemo = false;
+    this.modifier = "";
 
     this.hudLabels = [
       {
@@ -101,7 +101,7 @@ class HUD {
     if (this.hud._children.length > 2) {
       this.hud._children = []; // delete the main hud
       this.hud.add('label').move([0, 0, 0]).scale(1.5).info("Game Over");
-      this.hud.add('label').move([0, -2.5, 0]).scale(1.5).info("Score: " + this.score);
+      this.hud.add('label').move([0, -2.5, 0]).scale(.5).info("Score: " + this.score);
     }
     this.hud.setMatrix(this.model.viewMatrix()).move(0,0,-1).turnY(Math.PI).scale(.1);
   }
@@ -136,9 +136,9 @@ class HUD {
     return ++this.wave;
   }
 
-  setDemo(isDemo) {
-    if (typeof isDemo === "boolean")
-      this.isDemo = isDemo;
+  setModifier(modifier) {
+    if (typeof modifier === "string")
+      this.modifier = modifier;
   }
 
 }

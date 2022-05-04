@@ -10,7 +10,7 @@ export const handleEnemyMovement = () => {
     if (!enemy.grounded) {
       gravityEvent(enemy);
     } else {
-      if (!getHUD().isDemo)
+      if (!(getHUD().modifier === "demo"))
         moveTowardsPlayer(enemy);
     }
     turnTowardsPlayer(enemy);
