@@ -112,7 +112,7 @@ const handleStoredObject = (obj) => {
 
 const applyPhysicsToObject = (obj) => {
   // apply gravity, friction, and restitution
-  if (getLowestY(obj.entity) + obj.getDeltaPos()[1] - obj.extraHeight <= .7366) { // .7366 meters because I want it to be on the table (29 inches)
+  if (getLowestY(obj.entity) + obj.getDeltaPos()[1] - obj.extraHeight <= .1) { // .7366 meters because I want it to be on the table (29 inches)
     obj.accelerantEvent("bounce");
     obj.accelerantEvent("friction");
   } else {

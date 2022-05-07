@@ -302,10 +302,11 @@ let materials = {}, defaultColor;
 
 let isNewBackground = 30;
 
-let drawMesh = (mesh, materialId, isTriangleMesh, textureSrc, flags) => {
+let drawMesh = (mesh, materialId, isTriangleMesh, textureSrc, flags, opacity) => {
    let m = M.getValue();
    setUniform('Matrix4fv', 'uModel', false, m);
    setUniform('Matrix4fv', 'uInvModel', false, matrix_inverse(m));
+   setUniform('1f', 'uOpacity', opacity);
 
    let material = materials[materialId];
    let a = material.ambient, d = material.diffuse, s = material.specular, t = material.texture;
@@ -1441,7 +1442,7 @@ let S = [], vm, vmi, computeQuadric, activeSet, implicitSurface,
 
    // DRAW ROUTINE THAT ALLOWS CUSTOM COLORS, TEXTURES AND TRANSFORMATIONS
 
-   let draw = (mesh,color,move,turn,size,texture,flags) => {
+   let draw = (mesh,color,move,turn,size,texture,flags,opacity) => {
 
       // IF NEEDED, CREATE A NEW MATERIAL FOR THIS COLOR.
 
@@ -1478,7 +1479,7 @@ let S = [], vm, vmi, computeQuadric, activeSet, implicitSurface,
       if (size)
          M.scale(size);
 
-      drawMesh(mesh, color, false, texture, flags);
+      drawMesh(mesh, color, false, texture, flags, opacity);
 
       if (move || turn || size)
          M.restore();
@@ -1876,7 +1877,7 @@ let S = [], vm, vmi, computeQuadric, activeSet, implicitSurface,
                                                  info   : S[n].info
 					       });
                }
-               draw(formMesh[name], materialId, null, null, null, S[n].texture, S[n].flags);
+               draw(formMesh[name], materialId, null, null, null, S[n].texture, S[n].flags, S[n].opacity);
                M.restore();
                if (m.texture)
                   delete m.texture;
@@ -3021,6 +3022,7 @@ function Node(_form) {
       this._bevel    = false;
       this._blend    = false;
       this._blur     = .5;
+      this._opacity = 1;
       this._children = [];
       this._color    = [1,1,1];
       this._info     = '';
@@ -3064,6 +3066,7 @@ function Node(_form) {
       child._color  = null;
       child._info   = null;
       child._melt   = null;
+      child._opacity = null;
       child._parent = this;
       child._precision = null;
       child._flags  = null;
@@ -3097,6 +3100,7 @@ function Node(_form) {
    this.scale     = (x,y,z) => { m.scale(x,y,z);       return this; }
    this.color     = (r,g,b) => { this._color = typeof r === 'string' ||
                                               Array.isArray(r) ? r : [r,g,b]; return this; }
+   this.opacity = (opacity) => { this._opacity = opacity; return this; }
    this.blur      = value   => { this._blur = value;   return this; }
    this.info      = value   => { if (this.prop('_blend') && this._info != value) activeSet(true);
                                 this._info = value;    return this; }
@@ -3180,6 +3184,7 @@ function Node(_form) {
       else if (form) {
          let s = {
             blur: this.prop('_blur'),
+            opacity: this.prop('_opacity'),
             color: color,
             id: id,
             info: this.prop('_info'),

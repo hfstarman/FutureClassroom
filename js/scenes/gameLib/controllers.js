@@ -23,7 +23,6 @@ export const handleControllerActions = () => {
 
 
   if (hitR !== null) {
-    // console.log(hitR.getName());
     markHovered(hitR, "right");
     if (buttonWentDown("triggerR"))
       markSelected(hitR, "right");
@@ -44,9 +43,10 @@ export const handleControllerActions = () => {
   if (Wrists.didFlick("right")) tryAlyxGrab("right");
   if (Wrists.didFlick("left")) tryAlyxGrab("left");
 
-  // grabbing objects
   if (buttonWentDown("trigger2R")) tryGrab("right");
+  if (buttonWentDown("trigger2L")) tryGrab("left");
   if (buttonWentUp("trigger2R")) releaseGrab("right");
+  if (buttonWentUp("trigger2L")) releaseGrab("left");
 
   // releasing selected objects
   if (buttonWentUp("triggerR")) removeSelected("right");
@@ -144,7 +144,7 @@ class Wrists {
     }
   }
 
-  static flickThreshold = 0.05;
+  static flickThreshold = 0.04;
 
   static updatePos() {
     let posL = Wrists.positions.left;

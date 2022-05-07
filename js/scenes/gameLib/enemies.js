@@ -23,12 +23,11 @@ class Enemy extends BaseClass {
 
     this.gravity = 2;
     this.acceleration = 0.2;
-    this.maxSpeed = 0.5;
+    this.maxSpeed = 0.25;
     this.grounded = false;
 
     this.state = "alive"; // alive, dead
-    // this.waveNumber = waveNumber;
-    // this.spawnTime = spawnTime;
+
     this.damage = 1;
     this.strideAngle = Math.PI/12;
     this.scoreValue = 100;
@@ -74,7 +73,7 @@ export class Zombie extends Enemy {
   constructor(model, initPosition) {
     super(model, initPosition);
 
-    const scale = .02;
+    const scale = .024;
 
     this.torso      = this.entity.add("cube")
                           .move(0, 0, 0)
@@ -134,8 +133,8 @@ export class FastZombie extends Zombie {
     super(model, initPosition);
     this.entity.color(c.darkRed);
 
-    this.acceleration = 0.8;
-    this.maxSpeed = 1.0;
+    this.acceleration = 0.4;
+    this.maxSpeed = 0.5;
 
     this.scoreValue = 175;
   }
@@ -149,7 +148,7 @@ export class ArmoredZombie extends Zombie {
     this.unarmoredColor = c.darkZombieGreen;
     this.hasArmor = true;
     this.damage = 3;
-    this.maxSpeed = 0.4;
+    this.maxSpeed = 0.2;
 
     this.scoreValue = 250;
   }

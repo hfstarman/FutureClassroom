@@ -34,10 +34,11 @@ class HUD {
     this.hud = model.add();
     this.score = 0;
     this.wave = 0;
-    this.health = 10;
+    this.health = 5;
     this.isGameOver = false;
     this.activePowerUp = "None";
     this.powerUpEndTime = 0;
+    this.modifier = "";
 
     this.hudLabels = [
       {
@@ -72,8 +73,8 @@ class HUD {
 
   checkPowerExpiration() {
     if (this.model.time > this.powerUpEndTime) {
-      if (this.activePowerUp === "Infinite Throw")
-        removeTemporaryObjects();
+      // if (this.activePowerUp === "Infinite Throw")
+      //   removeTemporaryObjects();
       this.activePowerUp = "None";
     }
   }
@@ -100,7 +101,7 @@ class HUD {
     if (this.hud._children.length > 2) {
       this.hud._children = []; // delete the main hud
       this.hud.add('label').move([0, 0, 0]).scale(1.5).info("Game Over");
-      this.hud.add('label').move([0, -2.5, 0]).scale(1.5).info("Score: " + this.score);
+      this.hud.add('label').move([0, -2.5, 0]).scale(.5).info("Score: " + this.score);
     }
     this.hud.setMatrix(this.model.viewMatrix()).move(0,0,-1).turnY(Math.PI).scale(.1);
   }
@@ -112,6 +113,10 @@ class HUD {
       this.hud.add('label').move([0, -2.5, 0]).scale(.5).info("Score: " + this.score);
     }
     this.hud.setMatrix(this.model.viewMatrix()).move(0,0,-1).turnY(Math.PI).scale(.1);
+  }
+
+  isGameDone() {
+    return this.isGameOver || WaveMaker.wonGame();
   }
 
   increaseHealth(amount) {
@@ -129,6 +134,11 @@ class HUD {
 
   incrementWave() {
     return ++this.wave;
+  }
+
+  setModifier(modifier) {
+    if (typeof modifier === "string")
+      this.modifier = modifier;
   }
 
 }

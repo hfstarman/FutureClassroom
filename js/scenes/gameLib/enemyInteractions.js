@@ -2,6 +2,7 @@
 import { enemies, getLiveEnemies } from "./enemies.js";
 import { getLowestY } from "./utils.js";
 import * as cg from "../../render/core/cg.js";
+import { getHUD } from "./hud.js";
 
 export const handleEnemyMovement = () => {
 
@@ -9,7 +10,8 @@ export const handleEnemyMovement = () => {
     if (!enemy.grounded) {
       gravityEvent(enemy);
     } else {
-      moveTowardsPlayer(enemy);
+      if (!(getHUD().modifier === "demo"))
+        moveTowardsPlayer(enemy);
     }
     turnTowardsPlayer(enemy);
     enemy.applyVelocity();
