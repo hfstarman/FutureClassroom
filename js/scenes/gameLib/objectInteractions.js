@@ -9,6 +9,7 @@ import { solveBallisticArc } from "../../util/math.js";
 import c from "./colors.js";
 import { getLowestY } from "./utils.js";
 import { getHUD } from "./hud.js";
+import { Transparency } from "./transparency.js";
 
 const grabDistance = 0.3;
 
@@ -63,9 +64,17 @@ export const getTargetedObject = (hand) => {
 }
 
 const didIntersect = (beam, obj) => {
-  return obj.entity._children.reduce((res, child) => (
+  const didHitObject = obj.entity._children.reduce((res, child) => (
     res || beam.hitPrism(child.getGlobalMatrix())
   ), false);
+  // check for transparent cube
+  let didHitTransCube = false;
+  if (Transparency.hasCube(obj.id)) {
+    const transCube = Transparency.getCube(obj.id);
+    didHitTransCube = beam.hitPrism(transCube.getGlobalMatrix());
+  }
+
+  return didHitObject || didHitTransCube;
 }
 
 export const animateObjects = () => {
@@ -155,7 +164,7 @@ export const tryGrab = (hand) => {
   if (closestObj !== null) {
     grabObject(closestObj, hand);
   } else if (getHUD().activePowerUp === "Infinite Throw") {
-    const newKnife = new Knife(getHUD().model, [0, 0, 0]);
+    const newKnife = new Knife(getHUD().model, getHUD().root, [0, 0, 0]);
     newKnife.makeTemporary();
     grabObject(newKnife, hand);
   }

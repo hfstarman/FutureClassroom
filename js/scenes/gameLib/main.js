@@ -6,13 +6,16 @@ import { handleCollisions } from "./collisions.js";
 import { createHUD, showHUD, getHUD } from "./hud.js";
 import { handleEnemyAttack } from "./enemyAttack.js";
 import { WaveMaker } from "./waveMaker.js";
+import { Transparency } from "./transparency.js";
 
 export function initGame(model, waveSpawns, modifier) {
+  const root = model.add();
   console.log("init game");
   model.setTable(false);
-  createHUD(model);
+  createHUD(model, root);
   getHUD().setModifier(modifier);
-  WaveMaker.init(model, waveSpawns);
+  Transparency.init(model);
+  WaveMaker.init(model, root, waveSpawns);
 }
 
 export function runGame() {
@@ -25,6 +28,7 @@ export function runGame() {
   handleEnemyAttack();
   WaveMaker.makeWaves();
   handleEnemyMovement();
+  Transparency.animate();
   handleObjectMovement();
   handleControllerActions();
 }

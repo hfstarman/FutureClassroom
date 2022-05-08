@@ -18,8 +18,8 @@ export const getLiveEnemies = () => (
 // enemy can't be in the same space as another enemy
 
 class Enemy extends BaseClass {
-  constructor(model, initPosition) {
-    super(model, initPosition);
+  constructor(model, root, initPosition) {
+    super(model, root, initPosition);
 
     this.gravity = 2;
     this.acceleration = 0.2;
@@ -70,8 +70,8 @@ const scaleProperly = (entity, scale) => {
 }
 
 export class Zombie extends Enemy {
-  constructor(model, initPosition) {
-    super(model, initPosition);
+  constructor(model, root, initPosition) {
+    super(model, root, initPosition);
 
     const scale = .024;
 
@@ -129,8 +129,8 @@ export class Zombie extends Enemy {
 }
 
 export class FastZombie extends Zombie {
-  constructor(model, initPosition) {
-    super(model, initPosition);
+  constructor(model, root, initPosition) {
+    super(model, root, initPosition);
     this.entity.color(c.darkRed);
 
     this.acceleration = 0.4;
@@ -141,8 +141,8 @@ export class FastZombie extends Zombie {
 }
 
 export class ArmoredZombie extends Zombie {
-  constructor(model, initPosition) {
-    super(model, initPosition);
+  constructor(model, root, initPosition) {
+    super(model, root, initPosition);
     this.entity.color(c.lightGray);
 
     this.unarmoredColor = c.darkZombieGreen;

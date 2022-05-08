@@ -4,9 +4,9 @@ import { removeTemporaryObjects } from "./objects.js";
 
 let gameHUD = null;
 
-export const createHUD = (model) => {
+export const createHUD = (model, root) => {
   if (gameHUD === null) {
-    gameHUD = new HUD(model);
+    gameHUD = new HUD(model, root);
     return gameHUD;
   } else {
     throw new Error("HUD already created, use getHUD instead");
@@ -29,9 +29,10 @@ export const showHUD = () => {
 }
 
 class HUD {
-  constructor(model) {
+  constructor(model, root) {
     this.model = model;
-    this.hud = model.add();
+    this.root = root;
+    this.hud = root.add();
     this.score = 0;
     this.wave = 0;
     this.health = 5;

@@ -4,11 +4,11 @@ import * as cg from "../../render/core/cg.js";
 let globalId = 0;
 
 export class BaseClass {
-  constructor(model,  initPosition) {
+  constructor(model, root,  initPosition) {
     if (initPosition === undefined) initPosition = [0, 1.5, 0];
     this.initPosition = initPosition;
     this.model = model;
-    this.entity = model.add();
+    this.entity = root.add();
     this.entity.move(initPosition);
     
     this.velocity = cg.vZero();

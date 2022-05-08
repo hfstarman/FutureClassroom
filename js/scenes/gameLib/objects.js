@@ -3,6 +3,7 @@ import { BaseClass } from "./baseClass.js";
 import * as cg from "../../render/core/cg.js";
 import c from "./colors.js";
 import { getHUD } from "./hud.js";
+import { Transparency } from "./transparency.js";
 /*
    Object Model
    ------------
@@ -41,8 +42,8 @@ export const state = {
 export class GameObject extends BaseClass {
   static throwSmoothingSize = 3;
 
-  constructor(model,  initPosition) {
-    super(model, initPosition);
+  constructor(model, root,  initPosition) {
+    super(model, root, initPosition);
 
     this.state = state.free;
     this.storedSlot = null;
@@ -117,8 +118,8 @@ export class GameObject extends BaseClass {
 }
 
 export class Cube extends GameObject {
-  constructor(model, initPosition) {
-    super(model, initPosition);
+  constructor(model, root, initPosition) {
+    super(model, root, initPosition);
     this.entityType = "Cube";
 
     this.entity.add("cube")
@@ -128,8 +129,8 @@ export class Cube extends GameObject {
 }
 
 export class Knife extends GameObject {
-  constructor(model, initPosition) {
-    super(model, initPosition);
+  constructor(model, root, initPosition) {
+    super(model, root, initPosition);
     this.entityType = "Knife";
     this.defaultColor = c.black;
     this.isDeadly = true;
@@ -144,6 +145,7 @@ export class Knife extends GameObject {
     this.blade      = this.entity.add("cube")
                           .move(0, 0.11, 0)
                           .scale(0.03, 0.10, 0.008);
+    Transparency.addCube(this.id);
     // this.selectBox  = this.entity.add("cube")
     //                       .move(0, .07, 0)
     //                       .scale(0.12, 0.12, 0.12)
@@ -157,6 +159,11 @@ export class Knife extends GameObject {
   
   }
 
+  delete() {
+    Transparency.removeCube(this.id);
+    super.delete();
+  }
+
   makeTemporary() {
     this.fromInfiniteThrow = true;
     const id = this.id;
@@ -165,8 +172,8 @@ export class Knife extends GameObject {
 }
 
 class PowerUp extends GameObject {
-  constructor(model, initPosition) {
-    super(model, initPosition);
+  constructor(model, root, initPosition) {
+    super(model, root, initPosition);
     this.entityType = "powerUp";
     this.powerUpType = "";
     this.extraHeight = .1;
@@ -195,8 +202,8 @@ class PowerUp extends GameObject {
 }
 
 export class HealthPickup extends PowerUp {
-  constructor(model, initPosition) {
-    super(model, initPosition);
+  constructor(model, root, initPosition) {
+    super(model, root, initPosition);
     this.powerUpType = "health";
     this.defaultColor = c.red;
     this.hoverColor = c.pinkish;
@@ -210,8 +217,8 @@ export class HealthPickup extends PowerUp {
 }
 
 export class InfinitePower extends PowerUp {
-  constructor(model, initPosition) {
-    super(model, initPosition);
+  constructor(model, root, initPosition) {
+    super(model, root, initPosition);
     this.powerUpType = "Infinite Throw";
     this.defaultColor = c.purple;
     this.hoverColor = c.lavender;

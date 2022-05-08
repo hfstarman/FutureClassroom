@@ -12,11 +12,13 @@ export class WaveMaker {
   static waveSpawner = null;
   static waveSpawns = {};
   static model = null;
+  static root = null;
   static numberOfWaves = 0;
 
-  static init(model, waveSpawns) {
+  static init(model, root, waveSpawns) {
     WaveMaker.waveSpawns = waveSpawns;
     WaveMaker.model = model;
+    WaveMaker.root = root;
     WaveMaker.numberOfWaves = Object.keys(waveSpawns).length;
   }
 
@@ -37,7 +39,7 @@ export class WaveMaker {
   
   static initWave(waveNumber) {
     const spawns = WaveMaker.waveSpawns["" + waveNumber];
-    WaveMaker.waveSpawner = new WaveSpawner(waveNumber, spawns, WaveMaker.model)
+    WaveMaker.waveSpawner = new WaveSpawner(waveNumber, spawns, WaveMaker.model, WaveMaker.root)
   }
 
   static wonGame() {
@@ -48,11 +50,12 @@ export class WaveMaker {
 
 
 class WaveSpawner {
-  constructor(waveNumber, spawns, model) {
+  constructor(waveNumber, spawns, model, root) {
     this.waveNumber = waveNumber;
     this.entitiesLeftToSpawn = WaveSpawner.setSpawnOrder(spawns); // {objects, enemies} // sort arrays in reverse order by time
     this.waveStartTime = model.time;
     this.model = model;
+    this.root = root;
   }
 
   // sort in reverse order by spawnTime
@@ -124,12 +127,12 @@ class WaveSpawner {
     }
 
     if (entityType === "ForeverInfiniteThrow") {
-      const infPower = new InfinitePower(this.model, [0, 15, 0]);
+      const infPower = new InfinitePower(this.model, this.root, [0, 15, 0]);
       infPower.duration = 1000000;
       infPower.activate();
     } else {      
       const entityTypeCleaned = entityType.replace(/\s/g, '').toLowerCase();
-      new entityClasses[entityTypeCleaned](this.model, position);
+      new entityClasses[entityTypeCleaned](this.model, this.root, position);
     }
   }
 
